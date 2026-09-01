@@ -796,6 +796,30 @@ async function sbVerify(){
   await syncNow(true);
   render();
 }
+async function sbPassword(mode){
+  const em = (document.getElementById("sbEmail")||{}).value || "";
+  const pw = (document.getElementById("sbPass")||{}).value || "";
+  const email = em.trim();
+  if(!email || !pw){ toast("מלא מייל וסיסמה"); return; }
+  if(pw.length < 6){ toast("הסיסמה חייבת להיות באורך 6 תווים לפחות"); return; }
+  const c = await sbClient(); if(!c){ toast(syncErr || "אין חיבור"); return; }
+  syncUI.email = email;
+  const fn = mode === "up" ? c.auth.signUp({email, password:pw}) : c.auth.signInWithPassword({email, password:pw});
+  const {data, error} = await fn;
+  if(error){
+    const m = error.message || "";
+    if(/already registered/i.test(m)) toast("המשתמש כבר קיים — לחץ «התחבר» במקום «צור חשבון»");
+    else if(/Invalid login/i.test(m)) toast("מייל או סיסמה שגויים");
+    else if(/Email not confirmed/i.test(m)) toast("צריך לכבות «Confirm email» בהגדרות Supabase");
+    else toast("שגיאה: " + m);
+    return;
+  }
+  if(!data.session){ toast("החשבון נוצר אך דורש אישור מייל — כבה «Confirm email» בהגדרות Supabase"); return; }
+  await sbSession();
+  toast("מחובר — מסנכרן…");
+  await syncNow(true);
+  render();
+}
 async function sbSignOut(){
   const c = await sbClient(); if(c) await c.auth.signOut();
   sbUser = null; render(); toast("התנתקת. הנתונים נשארו על המכשיר.");
@@ -1211,7 +1235,7 @@ function viewSync(){
          '<li><b>SQL Editor</b> ← הדבק את הקוד הזה ולחץ <b>Run</b>:' +
          '<div class="sqlbox">' + esc(SB_SQL) + '</div></li>' +
          '<li><b>Project Settings ← API ← Data API</b>: בשדה <b>Exposed schemas</b> הוסף <code>gym</code> לצד <code>public</code> ושמור. בלי זה השרת לא יחשוף את הטבלה.</li>' +
-         '<li><b>Authentication ← Emails ← Magic Link</b>: ודא שבגוף המייל מופיע <code>{{ .Token }}</code>. זה מה ששולח קוד בן 6 ספרות במקום קישור (קישור לא עובד טוב באפליקציה מהמסך הבית).</li>' +
+         '<li><b>Authentication ← Sign In / Providers ← Email</b>: כבה את <b>Confirm email</b> ושמור. ההתחברות כאן היא מייל וסיסמה, בלי תלות בשירות המייל של Supabase (שמוגבל ל-2 מיילים בשעה).</li>' +
          '<li><b>Project Settings ← API Keys</b>: העתק את המפתח <code>anon public</code> (או <code>Publishable key</code> בפרויקטים חדשים) — <b>לא</b> את <code>service_role</code>. את ה-Project URL בונים מה-Project ID שב-<b>Settings ← General</b>: <code>https://PROJECT-ID.supabase.co</code></li>' +
          '</ol>' +
          '<div class="field" style="margin-top:6px"><label for="sbUrl">Project URL</label>' +
@@ -1226,15 +1250,22 @@ function viewSync(){
   if(!sbUser){
     h += '<div class="section-label">התחברות</div><div class="card">';
     if(!syncUI.sent){
-      h += '<div class="field"><label for="sbEmail">כתובת המייל שלך</label>' +
-           '<input class="txtin" id="sbEmail" inputmode="email" autocapitalize="off" spellcheck="false" placeholder="you@example.com" value="' + esc(syncUI.email) + '"></div>' +
-           '<button class="btn" style="margin-top:14px" data-act="sendcode">שלח לי קוד</button>' +
-           '<div class="ex-sub" style="margin-top:10px">בלי סיסמה. נשלח קוד בן 6 ספרות למייל, וההתחברות נשמרת במכשיר.</div>';
+      h += '<div class="field"><label for="sbEmail">כתובת מייל</label>' +
+           '<input class="txtin" id="sbEmail" inputmode="email" autocapitalize="off" spellcheck="false" ' +
+           'placeholder="you@example.com" value="' + esc(syncUI.email) + '"></div>' +
+           '<div class="field" style="margin-top:10px"><label for="sbPass">סיסמה (6 תווים ומעלה)</label>' +
+           '<input class="txtin" id="sbPass" type="password" autocapitalize="off" spellcheck="false" placeholder="••••••••"></div>' +
+           '<div class="btn-row" style="margin-top:14px">' +
+           '<button class="btn" data-act="pwin">התחבר</button>' +
+           '<button class="btn ghost" data-act="pwup" style="white-space:nowrap">צור חשבון</button></div>' +
+           '<div class="ex-sub" style="margin-top:10px">בפעם הראשונה: «צור חשבון». אחר כך «התחבר». הסיסמה נשמרת אצל Supabase בלבד, ואני לא רואה אותה.</div>' +
+           '<button class="btn quiet" data-act="sendcode" style="margin-top:6px">או: שלח לי קוד למייל במקום</button>';
     }else{
       h += '<div class="field"><label for="sbCode">הקוד שקיבלת ב-' + esc(syncUI.email) + '</label>' +
            '<input class="txtin num" id="sbCode" inputmode="numeric" placeholder="123456"></div>' +
            '<button class="btn" style="margin-top:14px" data-act="verifycode">התחבר</button>' +
-           '<button class="btn quiet" data-act="resend">שלח קוד שוב</button>';
+           '<button class="btn quiet" data-act="backpw">חזרה להתחברות עם סיסמה</button>' +
+           '<div class="ex-sub" style="margin-top:6px">שירות המייל החינמי של Supabase מוגבל ל-2 מיילים בשעה ולעיתים איטי.</div>';
     }
     h += '</div>';
   }
@@ -1276,6 +1307,9 @@ document.addEventListener("click", e => {
   else if(act === "sbforget"){ sbForget(); }
   else if(act === "sendcode" || act === "resend"){ sbSendCode(); }
   else if(act === "verifycode"){ sbVerify(); }
+  else if(act === "pwin"){ sbPassword("in"); }
+  else if(act === "pwup"){ sbPassword("up"); }
+  else if(act === "backpw"){ syncUI.sent = false; render(); }
   else if(act === "syncnow"){ syncNow(false); }
   else if(act === "signout"){ sbSignOut(); }
   else if(act === "addbody"){ addBody(); }
