@@ -1212,7 +1212,7 @@ function viewSync(){
          '<div class="sqlbox">' + esc(SB_SQL) + '</div></li>' +
          '<li><b>Project Settings ← API ← Data API</b>: בשדה <b>Exposed schemas</b> הוסף <code>gym</code> לצד <code>public</code> ושמור. בלי זה השרת לא יחשוף את הטבלה.</li>' +
          '<li><b>Authentication ← Emails ← Magic Link</b>: ודא שבגוף המייל מופיע <code>{{ .Token }}</code>. זה מה ששולח קוד בן 6 ספרות במקום קישור (קישור לא עובד טוב באפליקציה מהמסך הבית).</li>' +
-         '<li><b>Project Settings ← API</b>: העתק את <code>Project URL</code> ואת המפתח <code>anon public</code>, והדבק כאן למטה.</li>' +
+         '<li><b>Project Settings ← API Keys</b>: העתק את המפתח <code>anon public</code> (או <code>Publishable key</code> בפרויקטים חדשים) — <b>לא</b> את <code>service_role</code>. את ה-Project URL בונים מה-Project ID שב-<b>Settings ← General</b>: <code>https://PROJECT-ID.supabase.co</code></li>' +
          '</ol>' +
          '<div class="field" style="margin-top:6px"><label for="sbUrl">Project URL</label>' +
          '<input class="txtin" id="sbUrl" placeholder="https://xxxxx.supabase.co" autocapitalize="off" spellcheck="false"></div>' +
