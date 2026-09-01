@@ -127,6 +127,14 @@ input{font:inherit}
   color:var(--ink); font-weight:700}
 .wt::placeholder{color:var(--muted); font-weight:400}
 .hint{font-size:12.5px; color:var(--muted); margin-top:8px}
+.ex-en{font-size:13px; color:var(--muted); margin-top:4px; display:flex; gap:10px; align-items:center; flex-wrap:wrap}
+.ex-en .en{direction:ltr; unicode-bidi:isolate; letter-spacing:.01em}
+.ex-en a{color:var(--accent); text-decoration:none; font-weight:700; white-space:nowrap}
+.ex-en a:hover{text-decoration:underline}
+.howbtn{font-size:13px; color:var(--accent); font-weight:700; padding:0}
+.how{margin-top:10px; padding:12px 14px; background:var(--surface-2); border-radius:14px;
+  font-size:14px; line-height:1.55; color:var(--ink)}
+.awake{font-size:12px; color:var(--good); margin-top:6px}
 
 /* buttons */
 .btn{
@@ -299,6 +307,35 @@ const PLANS = [
   }
 ];
 
+/* ============ ביצוע נכון: שם באנגלית + הסבר קצר ============ */
+const INFO = {
+  "סקוואט חופשי (מוט)":{en:"Barbell Back Squat",how:"המוט מונח על גב הכתפיים, רגליים ברוחב האגן ואצבעות מעט החוצה. יורדים עד שהירך מקבילה לרצפה, הגב ישר והברך בכיוון האצבעות."},
+  "לחיצת חזה במוט (שטוח)":{en:"Barbell Bench Press",how:"אחיזה מעט רחבה מהכתפיים, שכמות מכווצות לספסל. מורידים בשליטה לאמצע החזה ולוחצים למעלה בלי לנעול מרפקים בכוח."},
+  "מתח (או פולי רחב)":{en:"Pull-Up / Lat Pulldown",how:"אחיזה רחבה. מושכים עד שהסנטר עובר את המוט (או המוט מגיע לחזה העליון), מובילים עם המרפקים כלפי מטה ויורדים לאט."},
+  "לחיצת כתפיים במוט (עמידה)":{en:"Standing Overhead Press",how:"רגליים ברוחב האגן, בטן וישבן כווצים. לוחצים מגובה הסנטר ישר מעל הראש בלי לקשת את הגב התחתון."},
+  "פשיטת מרפקים בכבל":{en:"Cable Triceps Pushdown",how:"מרפקים צמודים לצדי הגוף וקבועים במקום. פושטים עד יישור מלא, עוצרים רגע ומחזירים לאט."},
+  "כפיפת מרפקים במוט W":{en:"EZ-Bar Biceps Curl",how:"מרפקים צמודים לגוף. מכופפים בלי להניע את הכתף ובלי תנופה של הגב התחתון."},
+  "פשיטות גב":{en:"Back Extension (Hyperextension)",how:"האגן קבוע על הכרית. יורדים עם גב ישר ומתרוממים עד קו ישר עם הגוף — בלי לקשת מעבר לקו."},
+  "אירובי מתון":{en:"Steady-State Cardio",how:"קצב שמאפשר לדבר משפט שלם אבל לא לשיר. 30 דקות רצופות, דופק בינוני."},
+  "לחיצת רגליים במכונה":{en:"Leg Press",how:"כפות הרגליים ברוחב האגן על הפלטה. מורידים עד כ-90 מעלות בברך, בלי שהאגן מתרומם מהמושב."},
+  "לחיצת חזה משקולות (שיפוע חיובי)":{en:"Incline Dumbbell Press",how:"ספסל בשיפוע 30-45 מעלות. מורידים לגובה החזה העליון ולוחצים למעלה ומעט פנימה."},
+  "חתירה בטי-באר (T-Bar)":{en:"T-Bar Row",how:"הרכנה קדימה עם גב ישר וברכיים רכות. מושכים את הידית לבטן התחתונה ומכווצים שכמות בסוף."},
+  "לחיצת משקולות בישיבה":{en:"Seated Dumbbell Shoulder Press",how:"גב נשען על המשענת. מתחילים בגובה האוזניים ולוחצים למעלה עד כמעט יישור מרפקים."},
+  "לחיצה צרפתית (EZ Bar)":{en:"EZ-Bar Skull Crusher",how:"בשכיבה, זרועות מאונכות לרצפה ומרפקים קבועים. מורידים לכיוון המצח ופושטים בלי להזיז את המרפק."},
+  "כפיפת מרפקים (משקולות)":{en:"Dumbbell Biceps Curl",how:"בלי תנופה. סיבוב קל של כף היד כלפי מעלה בסוף התנועה, ירידה איטית."},
+  "פלאנק (Plank)":{en:"Plank",how:"מרפקים מתחת לכתפיים, גוף בקו ישר מהעקבים לראש. בטן וישבן כווצים — בלי שקיעה במותן."},
+  "סקוואט בולגרי (או לאנג׳ים)":{en:"Bulgarian Split Squat",how:"הרגל האחורית על ספסל. יורדים אנכית עד 90 מעלות בברך הקדמית, המשקל על העקב הקדמי."},
+  "פרפר בכבלים / מכונה":{en:"Cable Fly / Pec Deck",how:"מרפקים כפופים קלות וקבועים לאורך כל התנועה. מקרבים את הידיים בקשת רחבה עד מפגש מול החזה."},
+  "פולי עליון אחיזה צרה":{en:"Close-Grip Lat Pulldown",how:"אחיזה צרה ניטרלית. מושכים לחזה העליון עם חזה פתוח ומרפקים נעים לאורך הגוף."},
+  "הרחקת זרועות לצדדים":{en:"Dumbbell Lateral Raise",how:"מרפקים כפופים קלות. מרימים לצדדים עד גובה הכתף — המרפק מוביל, לא כף היד."},
+  "פשיטה מעל הראש":{en:"Overhead Triceps Extension",how:"מרפקים צמודים לראש ומצביעים למעלה. מורידים מאחורי הראש ופושטים בלי לפתוח מרפקים."},
+  "פטישים (Hammmer Curls)":{en:"Hammer Curl",how:"אחיזה ניטרלית, אגודלים כלפי מעלה. כפיפה בלי לסובב את כף היד ובלי תנופה."},
+  "הרמת רגליים בתלייה":{en:"Hanging Leg Raise",how:"תלייה על המוט בלי נדנוד. מרימים רגליים ישרות עד גובה האגן ומורידים בשליטה."}
+};
+function info(name){ return INFO[name] || {en:name, how:""}; }
+function ytUrl(q){ return "https://www.youtube.com/results?search_query=" + encodeURIComponent(q + " proper form"); }
+let openHow = new Set();
+
 /* ============ אחסון ============ */
 const K = {hist:"gt.history", active:"gt.active", rest:"gt.rest", swaps:"gt.swaps", sugg:"gt.sugg", theme:"gt.theme"};
 function load(k, dflt){ try{ const v=localStorage.getItem(k); return v?JSON.parse(v):dflt; }catch(e){ return dflt; } }
@@ -359,6 +396,7 @@ function startWorkout(planId){
     }))
   };
   save(K.active, active);
+  keepAwake(true);
   render();
   window.scrollTo(0,0);
 }
@@ -425,10 +463,31 @@ function endRest(ring){
   if(ring) beep();
 }
 
+/* ============ שמירה על מסך דלוק בזמן אימון ============ */
+let wakeLock = null;
+async function keepAwake(on){
+  try{
+    if(!("wakeLock" in navigator)) return;
+    if(on && !wakeLock){
+      wakeLock = await navigator.wakeLock.request("screen");
+      wakeLock.addEventListener("release", () => { wakeLock = null; });
+    }else if(!on && wakeLock){
+      const w = wakeLock; wakeLock = null; await w.release();
+    }
+  }catch(e){ wakeLock = null; }
+}
+document.addEventListener("visibilitychange", () => {
+  if(document.visibilityState !== "visible") return;
+  if(active) keepAwake(true);
+  if(rest.id) tickRest();   // משלים את הספירה שרצה ברקע
+  else if(active) render();
+});
+
 /* ============ פעולות ============ */
 function toggleSet(i, j){
   const plan = planById(active.planId);
   const st = active.exercises[i];
+  keepAwake(true);
   const now = !st.done[j];
   st.done[j] = now;
   save(K.active, active);
@@ -473,13 +532,13 @@ function finishWorkout(){
   history = history.slice(0, 12);
   save(K.hist, history);
   active = null; localStorage.removeItem(K.active);
-  endRest(false);
+  endRest(false); keepAwake(false);
   render(); window.scrollTo(0,0);
   toast("האימון נשמר 💪");
 }
 function cancelWorkout(){
   active = null; localStorage.removeItem(K.active);
-  endRest(false); render(); window.scrollTo(0,0);
+  endRest(false); keepAwake(false); render(); window.scrollTo(0,0);
 }
 
 /* ============ הצעת גיוון חודשית ============ */
@@ -620,11 +679,18 @@ function viewWorkout(){
     const isDone = d === ex.sets;
     const nextSet = st.done.indexOf(false);
     const prev = lastWeight(active.planId, i, st.name);
+    const nfo = swaps[exKey(active.planId,i)] ? {en: st.name, how:""} : info(ex.name);
+    const isOpen = openHow.has(i);
     h += '<div class="card ex' + (isDone ? " done" : (i === cur ? " current" : "")) + '">' +
          '<div class="ex-head"><div class="ex-idx">' + (isDone ? "✓" : (i+1)) + '</div><div style="flex:1">' +
          '<div class="ex-group">' + esc(ex.group) + '</div>' +
          '<div class="ex-name">' + esc(st.name) + '</div>' +
-         '<div class="ex-sub">' + ex.sets + ' סטים · ' + esc(ex.reps) + '</div></div></div>';
+         '<div class="ex-sub">' + ex.sets + ' סטים · ' + esc(ex.reps) + '</div>' +
+         '<div class="ex-en"><span class="en">' + esc(nfo.en) + '</span>' +
+         '<a href="' + esc(ytUrl(nfo.en)) + '" target="_blank" rel="noopener">וידאו ↗</a>' +
+         (nfo.how ? '<button class="howbtn" data-act="how" data-i="' + i + '">' + (isOpen ? "הסתר ביצוע" : "איך מבצעים?") + '</button>' : '') +
+         '</div></div></div>';
+    if(isOpen && nfo.how) h += '<div class="how">' + esc(nfo.how) + '</div>';
 
     h += '<div class="ex-body"><div class="sets">';
     for(let j=0;j<ex.sets;j++){
@@ -665,6 +731,7 @@ document.addEventListener("click", e => {
   if(act === "start"){ startWorkout(el.dataset.plan); }
   else if(act === "set"){ toggleSet(+el.dataset.i, +el.dataset.j); }
   else if(act === "rest"){ cycleRest(+el.dataset.i); }
+  else if(act === "how"){ const i = +el.dataset.i; openHow.has(i) ? openHow.delete(i) : openHow.add(i); render(); }
   else if(act === "finish"){ finishWorkout(); }
   else if(act === "cancel"){ if(confirm("לבטל את האימון בלי לשמור?")) cancelWorkout(); }
   else if(act === "home"){ render(); window.scrollTo(0,0); }
