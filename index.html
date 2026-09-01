@@ -46,111 +46,89 @@ h1,h2,h3{font-family:"Rubik","Heebo",system-ui,sans-serif; margin:0; text-wrap:b
 button{font:inherit; color:inherit; cursor:pointer; border:0; background:none}
 input{font:inherit}
 .num{font-variant-numeric:tabular-nums}
-
 .app{max-width:600px; margin:0 auto; padding:0 16px 140px}
 
-/* ---------- top bar ---------- */
-.top{
-  position:sticky; top:0; z-index:30; background:var(--ground);
-  padding:14px 0 10px; margin:0 -16px; padding-inline:16px;
-  border-bottom:1px solid transparent;
-}
-.top.stuck{border-bottom-color:var(--line)}
+.top{position:sticky; top:0; z-index:30; background:var(--ground); padding:14px 0 10px;
+  margin:0 -16px; padding-inline:16px; border-bottom:1px solid transparent}
 .top-row{display:flex; align-items:center; gap:10px}
 .brand{font-family:"Rubik"; font-weight:800; font-size:19px; letter-spacing:-.02em}
 .brand span{color:var(--accent)}
 .spacer{flex:1}
-.iconbtn{
-  width:38px; height:38px; border-radius:12px; display:grid; place-items:center;
-  background:var(--surface); border:1px solid var(--line); font-size:15px;
-}
+.iconbtn{width:38px; height:38px; border-radius:12px; display:grid; place-items:center;
+  background:var(--surface); border:1px solid var(--line); font-size:15px}
 .iconbtn:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
 
-/* ---------- progress rail ---------- */
 .rail{margin-top:12px}
 .rail-head{display:flex; align-items:baseline; gap:8px; font-size:13.5px; color:var(--muted); margin-bottom:6px}
 .rail-head b{color:var(--ink); font-weight:700}
 .bar{height:8px; border-radius:99px; background:var(--line); overflow:hidden}
 .bar i{display:block; height:100%; background:var(--accent); border-radius:99px; transition:width .35s cubic-bezier(.2,.8,.2,1)}
 
-/* ---------- cards ---------- */
-.card{
-  background:var(--surface); border:1px solid var(--line); border-radius:18px;
-  padding:16px; box-shadow:var(--shadow);
-}
+.card{background:var(--surface); border:1px solid var(--line); border-radius:18px; padding:16px; box-shadow:var(--shadow)}
 .stack{display:flex; flex-direction:column; gap:12px}
-.section-label{
-  font-size:13px; font-weight:700; color:var(--muted); margin:22px 2px 10px;
-}
+.section-label{font-size:13px; font-weight:700; color:var(--muted); margin:22px 2px 10px}
 .plan-note{font-size:13.5px; color:var(--muted); margin:16px 2px 12px; line-height:1.45}
 
-/* day cards */
 .day{display:flex; align-items:center; gap:14px; width:100%; text-align:start}
-.day-mark{
-  width:46px; height:46px; flex:none; border-radius:14px; display:grid; place-items:center;
-  background:var(--accent-soft); color:var(--accent); font-family:"Rubik"; font-weight:800; font-size:18px;
-}
+.day-mark{width:46px; height:46px; flex:none; border-radius:14px; display:grid; place-items:center;
+  background:var(--accent-soft); color:var(--accent); font-family:"Rubik"; font-weight:800; font-size:18px}
 .day.rest .day-mark{background:var(--surface-2); color:var(--muted)}
+.day.tool .day-mark{background:var(--surface-2); color:var(--accent); font-size:20px}
 .day-title{font-family:"Rubik"; font-weight:600; font-size:17px}
 .day-meta{font-size:13.5px; color:var(--muted)}
 .chev{color:var(--muted); font-size:20px; margin-inline-start:auto}
 
-/* exercise card */
+.resume{border-color:var(--accent); background:linear-gradient(180deg,var(--accent-soft),var(--surface) 60%)}
+.resume h3{font-size:17px}
+.resume .day-meta{margin-top:2px}
+
 .ex{transition:border-color .2s, opacity .2s}
 .ex.current{border-color:var(--accent); box-shadow:0 0 0 1px var(--accent), var(--shadow)}
 .ex.done{opacity:.62}
 .ex-head{display:flex; gap:12px; align-items:flex-start}
-.ex-idx{
-  width:26px; height:26px; flex:none; border-radius:9px; background:var(--surface-2);
-  display:grid; place-items:center; font-size:12.5px; font-weight:700; color:var(--muted); margin-top:2px;
-}
+.ex-idx{width:26px; height:26px; flex:none; border-radius:9px; background:var(--surface-2);
+  display:grid; place-items:center; font-size:12.5px; font-weight:700; color:var(--muted); margin-top:2px}
 .ex.done .ex-idx{background:var(--good-soft); color:var(--good)}
 .ex-group{font-size:12.5px; font-weight:700; color:var(--accent)}
 .ex.done .ex-group{color:var(--good)}
 .ex-name{font-family:"Rubik"; font-weight:600; font-size:17px; line-height:1.3; margin-top:1px}
 .ex-sub{font-size:13.5px; color:var(--muted); margin-top:3px}
+.ex-en{font-size:13px; color:var(--muted); margin-top:4px; display:flex; gap:10px; align-items:center; flex-wrap:wrap}
+.ex-en .en{direction:ltr; unicode-bidi:isolate}
+.ex-en a{color:var(--accent); text-decoration:none; font-weight:700; white-space:nowrap}
+.howbtn{font-size:13px; color:var(--accent); font-weight:700; padding:0}
+.how{margin-top:10px; padding:12px 14px; background:var(--surface-2); border-radius:14px; font-size:14px; line-height:1.55}
 .ex-body{margin-top:14px; display:flex; flex-wrap:wrap; align-items:center; gap:10px}
 .sets{display:flex; gap:8px; flex-wrap:wrap}
-.set{
-  width:46px; height:46px; border-radius:14px; border:1.5px solid var(--line);
-  background:var(--surface-2); font-family:"Rubik"; font-weight:600; font-size:15px; color:var(--muted);
-  display:grid; place-items:center; transition:transform .12s, background .15s, color .15s, border-color .15s;
-}
+.set{width:46px; height:46px; border-radius:14px; border:1.5px solid var(--line); background:var(--surface-2);
+  font-family:"Rubik"; font-weight:600; font-size:15px; color:var(--muted); display:grid; place-items:center;
+  transition:transform .12s, background .15s, color .15s, border-color .15s}
 .set:active{transform:scale(.93)}
 .set.on{background:var(--good); border-color:var(--good); color:#fff}
 .set.next{border-color:var(--accent); color:var(--accent); background:var(--surface)}
 .tools{display:flex; gap:8px; margin-inline-start:auto; align-items:center}
-.pill{
-  border:1px solid var(--line); background:var(--surface-2); border-radius:99px;
-  padding:7px 12px; font-size:13px; color:var(--muted); display:inline-flex; gap:6px; align-items:center;
-}
+.pill{border:1px solid var(--line); background:var(--surface-2); border-radius:99px; padding:7px 12px;
+  font-size:13px; color:var(--muted); display:inline-flex; gap:6px; align-items:center}
 .pill b{color:var(--ink); font-weight:700}
-.wt{width:52px; text-align:center; border:0; background:transparent; padding:0;
-  color:var(--ink); font-weight:700}
+.wt{width:52px; text-align:center; border:0; background:transparent; padding:0; color:var(--ink); font-weight:700}
 .wt::placeholder{color:var(--muted); font-weight:400}
 .hint{font-size:12.5px; color:var(--muted); margin-top:8px}
-.ex-en{font-size:13px; color:var(--muted); margin-top:4px; display:flex; gap:10px; align-items:center; flex-wrap:wrap}
-.ex-en .en{direction:ltr; unicode-bidi:isolate; letter-spacing:.01em}
-.ex-en a{color:var(--accent); text-decoration:none; font-weight:700; white-space:nowrap}
-.ex-en a:hover{text-decoration:underline}
-.howbtn{font-size:13px; color:var(--accent); font-weight:700; padding:0}
-.how{margin-top:10px; padding:12px 14px; background:var(--surface-2); border-radius:14px;
-  font-size:14px; line-height:1.55; color:var(--ink)}
-.awake{font-size:12px; color:var(--good); margin-top:6px}
 
-/* buttons */
-.btn{
-  border-radius:14px; padding:14px 18px; font-family:"Rubik"; font-weight:600; font-size:16px;
-  background:var(--accent); color:var(--accent-ink); text-align:center; width:100%;
-  transition:transform .12s, filter .15s;
-}
+.reps{margin-top:12px; padding-top:12px; border-top:1px solid var(--line); display:flex; align-items:center; gap:8px; flex-wrap:wrap}
+.reps-label{font-size:13px; color:var(--muted); font-weight:700}
+.rep{width:46px; height:38px; text-align:center; border:1px solid var(--line); background:var(--surface-2);
+  border-radius:11px; color:var(--ink); font-weight:700; font-variant-numeric:tabular-nums; padding:0}
+.rep:disabled{opacity:.35}
+.reps-unit{font-size:12.5px; color:var(--muted)}
+
+.btn{border-radius:14px; padding:14px 18px; font-family:"Rubik"; font-weight:600; font-size:16px;
+  background:var(--accent); color:var(--accent-ink); text-align:center; width:100%; transition:transform .12s}
 .btn:active{transform:scale(.985)}
 .btn.ghost{background:var(--surface); color:var(--ink); border:1px solid var(--line)}
 .btn.quiet{background:transparent; color:var(--muted); font-weight:500; font-size:14.5px; padding:10px}
 .btn.danger{background:transparent; color:var(--hot); border:1px solid var(--line)}
 .btn-row{display:flex; gap:10px}
 
-/* history */
 .hist-top{display:flex; align-items:baseline; gap:8px}
 .hist-date{font-family:"Rubik"; font-weight:600; font-size:16px}
 .hist-when{font-size:13px; color:var(--muted); margin-inline-start:auto}
@@ -158,56 +136,63 @@ input{font:inherit}
 .stat{display:flex; flex-direction:column}
 .stat b{font-family:"Rubik"; font-size:19px; font-weight:800}
 .stat span{font-size:12px; color:var(--muted)}
-.hist-lines{margin-top:12px; border-top:1px solid var(--line); padding-top:10px;
-  display:flex; flex-direction:column; gap:6px; font-size:14px}
+.hist-lines{margin-top:12px; border-top:1px solid var(--line); padding-top:10px; display:flex; flex-direction:column; gap:6px; font-size:14px}
 .hist-line{display:flex; gap:10px; color:var(--muted)}
 .hist-line b{color:var(--ink); font-weight:500}
-.hist-line em{font-style:normal; margin-inline-start:auto; font-variant-numeric:tabular-nums}
+.hist-line em{font-style:normal; margin-inline-start:auto; font-variant-numeric:tabular-nums; white-space:nowrap}
 
-/* suggestion */
 .sugg{border-color:var(--accent); background:linear-gradient(180deg,var(--accent-soft),var(--surface) 55%)}
-.sugg h3{font-size:17px}
 .sugg p{margin:6px 0 0; font-size:14px; color:var(--muted)}
 .alt{display:flex; align-items:center; gap:10px; padding:10px 0; border-top:1px solid var(--line)}
-.alt-txt{font-size:14px}
-.alt-txt b{display:block; font-weight:500}
+.alt-txt b{display:block; font-weight:500; font-size:14px}
 .alt-txt span{font-size:12.5px; color:var(--muted)}
 .alt button{border:1px solid var(--accent); color:var(--accent); border-radius:99px; padding:7px 14px;
   font-size:13.5px; font-weight:700; margin-inline-start:auto; white-space:nowrap}
 .alt button.applied{border-color:var(--good); color:var(--good)}
 
-/* rest sheet */
-.sheet{
-  position:fixed; inset-inline:0; bottom:0; z-index:50; background:var(--surface);
-  border-top:1px solid var(--line); border-radius:22px 22px 0 0; padding:18px 18px calc(18px + env(safe-area-inset-bottom));
-  box-shadow:0 -14px 40px -20px rgba(0,0,0,.5); transform:translateY(110%); transition:transform .32s cubic-bezier(.2,.8,.2,1);
-}
+/* charts */
+.chart{width:100%; height:auto; display:block; margin-top:4px; overflow:visible}
+.ch-top{display:flex; align-items:baseline; gap:10px; flex-wrap:wrap}
+.ch-name{font-family:"Rubik"; font-weight:600; font-size:16px}
+.ch-en{font-size:12.5px; color:var(--muted); direction:ltr; unicode-bidi:isolate}
+.ch-now{margin-inline-start:auto; font-family:"Rubik"; font-weight:800; font-size:18px; font-variant-numeric:tabular-nums}
+.delta{font-size:13px; font-weight:700; padding:3px 9px; border-radius:99px; direction:ltr; unicode-bidi:isolate; display:inline-block}
+.delta.up{background:var(--good-soft); color:var(--good)}
+.delta.down{background:var(--hot-soft); color:var(--hot)}
+.delta.flat{background:var(--surface-2); color:var(--muted)}
+.ch-axis{display:flex; justify-content:space-between; font-size:12px; color:var(--muted); margin-top:2px; direction:ltr}
+
+/* body metrics form */
+.field{display:flex; flex-direction:column; gap:6px; flex:1; min-width:120px}
+.field label{font-size:13px; color:var(--muted); font-weight:700}
+.field input{border:1px solid var(--line); background:var(--surface-2); border-radius:12px;
+  padding:12px; color:var(--ink); font-weight:700; font-variant-numeric:tabular-nums; text-align:center}
+.fields{display:flex; gap:10px; flex-wrap:wrap}
+.log-row{display:flex; align-items:center; gap:10px; padding:11px 0; border-top:1px solid var(--line); font-size:14px}
+.log-row .d{color:var(--muted); font-size:13px}
+.log-row .v{margin-inline-start:auto; font-weight:700; font-variant-numeric:tabular-nums; white-space:nowrap}
+.log-row .x{color:var(--muted); font-size:18px; padding:0 4px}
+
+.sheet{position:fixed; inset-inline:0; bottom:0; z-index:50; background:var(--surface); border-top:1px solid var(--line);
+  border-radius:22px 22px 0 0; padding:18px 18px calc(18px + env(safe-area-inset-bottom));
+  box-shadow:0 -14px 40px -20px rgba(0,0,0,.5); transform:translateY(110%); transition:transform .32s cubic-bezier(.2,.8,.2,1)}
 .sheet.up{transform:translateY(0)}
 .sheet-in{max-width:600px; margin:0 auto; display:flex; align-items:center; gap:16px}
 .ring{position:relative; width:88px; height:88px; flex:none}
 .ring svg{transform:rotate(90deg) scaleX(-1)}
-.ring-num{
-  position:absolute; inset:0; display:grid; place-items:center;
-  font-family:"Rubik"; font-weight:800; font-size:22px; font-variant-numeric:tabular-nums;
-}
+.ring-num{position:absolute; inset:0; display:grid; place-items:center; font-family:"Rubik"; font-weight:800;
+  font-size:22px; font-variant-numeric:tabular-nums}
 .sheet-t{font-family:"Rubik"; font-weight:600; font-size:16px}
 .sheet-s{font-size:13.5px; color:var(--muted); margin-top:2px}
 .sheet-btns{display:flex; gap:8px; margin-top:10px}
 .sheet-btns button{border:1px solid var(--line); border-radius:99px; padding:9px 16px; font-size:14px; font-weight:600; white-space:nowrap}
 .sheet-btns button.pri{background:var(--accent); color:var(--accent-ink); border-color:var(--accent)}
 
-/* finish bar */
-.footbar{
-  position:fixed; inset-inline:0; bottom:0; z-index:40; padding:12px 16px calc(12px + env(safe-area-inset-bottom));
-  background:linear-gradient(180deg,transparent,var(--ground) 32%);
-}
+.footbar{position:fixed; inset-inline:0; bottom:0; z-index:40; padding:12px 16px calc(12px + env(safe-area-inset-bottom));
+  background:linear-gradient(180deg,transparent,var(--ground) 32%)}
 .footbar-in{max-width:600px; margin:0 auto}
-
-.empty{text-align:center; color:var(--muted); font-size:14.5px; padding:26px 10px}
-.toast{
-  position:fixed; inset-inline:0; bottom:96px; z-index:60; display:flex; justify-content:center;
-  pointer-events:none; opacity:0; transition:opacity .25s;
-}
+.empty{text-align:center; color:var(--muted); font-size:14.5px; padding:26px 10px; line-height:1.6}
+.toast{position:fixed; inset-inline:0; bottom:96px; z-index:60; display:flex; justify-content:center; pointer-events:none; opacity:0; transition:opacity .25s}
 .toast.show{opacity:1}
 .toast div{background:var(--ink); color:var(--ground); padding:10px 16px; border-radius:99px; font-size:14px}
 @media (prefers-reduced-motion:reduce){*{transition:none !important}}
@@ -301,7 +286,7 @@ const PLANS = [
        alts:["הרחקה בכבל יד אחת","הרחקה בהרכנה (כתף אחורית)","Upright Row באחיזה רחבה"]},
       {group:"יד אחורית", name:"פשיטה מעל הראש", sets:2, reps:"12-15 חזרות", rest:60,
        alts:["פשיטה בכבל עם חבל מעל הראש","Kickback במשקולת","לחיצה צרה במוט"]},
-      {group:"יד קדמית", name:"פטישים (Hammer Curls)", sets:2, reps:"12-15 חזרות", rest:60,
+      {group:"יד קדמית", name:"פטישים (Hammmer Curls)", sets:2, reps:"12-15 חזרות", rest:60,
        alts:["כפיפת Zottman","כפיפה בכבל עם חבל","Reverse Curl"]},
       {group:"ליבה", name:"הרמת רגליים בתלייה", sets:3, reps:"15 חזרות", rest:60,
        alts:["הרמת ברכיים במקבילים","Reverse Crunch","הרמת רגליים עם סיבוב"]}
@@ -336,19 +321,22 @@ const INFO = {
 };
 function info(name){ return INFO[name] || {en:name, how:""}; }
 function ytUrl(q){ return "https://www.youtube.com/results?search_query=" + encodeURIComponent(q + " proper form"); }
-let openHow = new Set();
 
 /* ============ אחסון ============ */
-const K = {hist:"gt.history", active:"gt.active", rest:"gt.rest", swaps:"gt.swaps", sugg:"gt.sugg", theme:"gt.theme"};
+const K = {hist:"gt.history", active:"gt.active", rest:"gt.rest", swaps:"gt.swaps", sugg:"gt.sugg", theme:"gt.theme", body:"gt.body"};
 function load(k, dflt){ try{ const v=localStorage.getItem(k); return v?JSON.parse(v):dflt; }catch(e){ return dflt; } }
 function save(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
 
-let history   = load(K.hist, []);
-let active    = load(K.active, null);
-let restOver  = load(K.rest, {});     // "planId:exIndex" -> seconds
-let swaps     = load(K.swaps, {});    // "planId:exIndex" -> שם התרגיל החלופי
-let sugg      = load(K.sugg, null);   // {nextAt: ms}
+let history  = load(K.hist, []);
+let active   = load(K.active, null);
+let restOver = load(K.rest, {});
+let swaps    = load(K.swaps, {});
+let body     = load(K.body, []);          // [{t, w, f}] — משקל גוף ואחוז שומן
+let sugg     = load(K.sugg, null);
 if(!sugg){ sugg = {nextAt: Date.now() + 30*864e5}; save(K.sugg, sugg); }
+
+let view = active ? "workout" : "home";   // home | workout | progress | body
+let openHow = new Set();
 
 /* ============ עזרים ============ */
 const app = document.getElementById("app");
@@ -358,10 +346,8 @@ const exKey = (planId, i) => planId + ":" + i;
 function exName(planId, i, ex){ return swaps[exKey(planId,i)] || ex.name; }
 function exRest(planId, i, ex){ const o = restOver[exKey(planId,i)]; return typeof o === "number" ? o : ex.rest; }
 function mmss(s){ const m = Math.floor(s/60), r = s%60; return m + ":" + String(r).padStart(2,"0"); }
-function fmtDate(ms){
-  const d = new Date(ms);
-  return d.toLocaleDateString("he-IL", {weekday:"long", day:"numeric", month:"long"});
-}
+function fmtDate(ms){ return new Date(ms).toLocaleDateString("he-IL", {weekday:"long", day:"numeric", month:"long"}); }
+function fmtShort(ms){ return new Date(ms).toLocaleDateString("he-IL", {day:"numeric", month:"numeric"}); }
 function relDay(ms){
   const days = Math.floor((new Date().setHours(0,0,0,0) - new Date(ms).setHours(0,0,0,0)) / 864e5);
   if(days <= 0) return "היום";
@@ -376,6 +362,12 @@ function toast(msg){
   document.getElementById("toastMsg").textContent = msg;
   t.classList.add("show"); clearTimeout(toastTimer);
   toastTimer = setTimeout(() => t.classList.remove("show"), 1800);
+}
+function isTime(repsText){ return /שניות|דקות/.test(repsText); }
+function unitOf(repsText){ return isTime(repsText) ? "שנ׳" : "חזרות"; }
+function targetReps(repsText){
+  const nums = String(repsText).match(/\d+/g);
+  return nums ? +nums[nums.length-1] : "";
 }
 function lastWeight(planId, i, name){
   for(const s of history){
@@ -394,13 +386,13 @@ function startWorkout(planId){
     exercises: plan.exercises.map((ex,i) => ({
       name: exName(planId,i,ex),
       done: new Array(ex.sets).fill(false),
+      reps: new Array(ex.sets).fill(""),
       weight: ""
     }))
   };
   save(K.active, active);
   keepAwake(true);
-  render();
-  window.scrollTo(0,0);
+  view = "workout"; render(); window.scrollTo(0,0);
 }
 function totals(){
   const plan = planById(active.planId);
@@ -415,9 +407,7 @@ function totals(){
 }
 function currentIndex(){
   const plan = planById(active.planId);
-  for(let i=0;i<plan.exercises.length;i++){
-    if(active.exercises[i].done.some(v => !v)) return i;
-  }
+  for(let i=0;i<plan.exercises.length;i++) if(active.exercises[i].done.some(v => !v)) return i;
   return plan.exercises.length - 1;
 }
 
@@ -454,9 +444,8 @@ function startRest(sec, label){
 function tickRest(){
   const left = Math.max(0, Math.round((rest.end - Date.now())/1000));
   document.getElementById("ringNum").textContent = mmss(left);
-  const C = 238.76;
-  document.getElementById("ringArc").style.strokeDashoffset = String(C * (1 - left/rest.total));
-  if(left <= 0){ endRest(true); }
+  document.getElementById("ringArc").style.strokeDashoffset = String(238.76 * (1 - left/rest.total));
+  if(left <= 0) endRest(true);
 }
 function endRest(ring){
   clearInterval(rest.id); rest.id = null;
@@ -465,7 +454,7 @@ function endRest(ring){
   if(ring) beep();
 }
 
-/* ============ שמירה על מסך דלוק בזמן אימון ============ */
+/* ============ שמירה על מסך דלוק ============ */
 let wakeLock = null;
 async function keepAwake(on){
   try{
@@ -481,84 +470,67 @@ async function keepAwake(on){
 document.addEventListener("visibilitychange", () => {
   if(document.visibilityState !== "visible") return;
   if(active) keepAwake(true);
-  if(rest.id) tickRest();   // משלים את הספירה שרצה ברקע
-  else if(active) render();
+  if(rest.id) tickRest();
+  else if(view === "workout") render();
 });
 
 /* ============ פעולות ============ */
 function toggleSet(i, j){
-  const plan = planById(active.planId);
-  const st = active.exercises[i];
   keepAwake(true);
+  const plan = planById(active.planId);
+  const ex = plan.exercises[i];
+  const st = active.exercises[i];
   const now = !st.done[j];
   st.done[j] = now;
+  if(now && st.reps[j] === "") st.reps[j] = targetReps(ex.reps);   // ברירת מחדל = היעד, ניתן לתקן
+  if(!now) st.reps[j] = "";
   save(K.active, active);
   render();
   if(now){
     const t = totals();
     if(t.done === t.total){ endRest(false); return; }
-    const restSec = exRest(active.planId, i, plan.exercises[i]);
     const nextIdx = currentIndex();
     const label = nextIdx === i
-      ? "הבא: סט " + (st.done.filter(Boolean).length + 1) + " מתוך " + plan.exercises[i].sets + " · " + st.name
+      ? "הבא: סט " + (st.done.filter(Boolean).length + 1) + " מתוך " + ex.sets + " · " + st.name
       : "הבא: " + active.exercises[nextIdx].name;
-    startRest(restSec, label);
+    startRest(exRest(active.planId, i, ex), label);
   }
 }
 function cycleRest(i){
-  const plan = planById(active ? active.planId : null);
+  const plan = planById(active.planId);
   const opts = [45,60,75,90,120,150];
   const cur = exRest(active.planId, i, plan.exercises[i]);
-  const next = opts[(opts.indexOf(cur) + 1 + opts.length) % opts.length] || 60;
+  const next = opts[(opts.indexOf(cur) + 1) % opts.length] || 60;
   restOver[exKey(active.planId,i)] = next;
-  save(K.rest, restOver);
-  render();
+  save(K.rest, restOver); render();
   toast("מנוחה: " + mmss(next));
 }
 function finishWorkout(){
   const plan = planById(active.planId);
   const t = totals();
-  const session = {
+  history.unshift({
     planId: active.planId, planTitle: plan.day + " · " + plan.title,
     date: active.startedAt, endedAt: Date.now(),
     setsDone: t.done, setsTotal: t.total,
     exercises: plan.exercises.map((ex,i) => ({
-      name: active.exercises[i].name,
-      group: ex.group,
-      done: active.exercises[i].done.filter(Boolean).length,
-      sets: ex.sets,
-      weight: active.exercises[i].weight
+      name: active.exercises[i].name, group: ex.group,
+      done: active.exercises[i].done.filter(Boolean).length, sets: ex.sets,
+      weight: active.exercises[i].weight,
+      reps: active.exercises[i].reps.filter((r,j) => active.exercises[i].done[j]),
+      unit: unitOf(ex.reps)
     }))
-  };
-  history.unshift(session);
-  history = history.slice(0, 12);
+  });
+  history = history.slice(0, 60);
   save(K.hist, history);
   active = null; localStorage.removeItem(K.active);
   endRest(false); keepAwake(false);
-  render(); window.scrollTo(0,0);
+  view = "home"; render(); window.scrollTo(0,0);
   toast("האימון נשמר 💪");
 }
 function cancelWorkout(){
   active = null; localStorage.removeItem(K.active);
-  endRest(false); keepAwake(false); render(); window.scrollTo(0,0);
-}
-
-/* ============ הצעת גיוון חודשית ============ */
-function suggestionDue(){ return Date.now() >= sugg.nextAt; }
-function pickSuggestions(){
-  // תרגיל אחד לכל יום אימון, לפי מספר האימונים שכבר בוצעו (מסתובב בין התרגילים)
-  const n = history.length;
-  const out = [];
-  ["a","c","e"].forEach((pid, k) => {
-    const plan = planById(pid);
-    const i = (n + k) % plan.exercises.length;
-    const ex = plan.exercises[i];
-    const cur = exName(pid, i, ex);
-    const pool = [ex.name, ...ex.alts].filter(x => x !== cur);
-    const alt = pool[(n + k) % pool.length];
-    out.push({planId:pid, i, day:plan.day, group:ex.group, from:cur, to:alt});
-  });
-  return out;
+  endRest(false); keepAwake(false);
+  view = "home"; render(); window.scrollTo(0,0);
 }
 function applySwap(planId, i, name){
   const ex = planById(planId).exercises[i];
@@ -572,24 +544,119 @@ function snoozeSugg(days){
   sugg.nextAt = Date.now() + days*864e5; save(K.sugg, sugg); render();
   toast(days >= 30 ? "נתראה בחודש הבא" : "נזכיר לך בעוד שבוע");
 }
+function suggestionDue(){ return Date.now() >= sugg.nextAt; }
+function pickSuggestions(){
+  const n = history.length, out = [];
+  ["a","c","e"].forEach((pid, k) => {
+    const plan = planById(pid);
+    const i = (n + k) % plan.exercises.length;
+    const ex = plan.exercises[i];
+    const cur = exName(pid, i, ex);
+    const pool = [ex.name, ...ex.alts].filter(x => x !== cur);
+    out.push({planId:pid, i, day:plan.day, group:ex.group, from:cur, to:pool[(n + k) % pool.length]});
+  });
+  return out;
+}
+
+/* ============ מדדי גוף ============ */
+function addBody(){
+  const w = parseFloat((document.getElementById("bw")||{}).value);
+  const f = parseFloat((document.getElementById("bf")||{}).value);
+  if(!w && !f){ toast("מלא משקל או אחוז שומן"); return; }
+  body.unshift({t: Date.now(), w: isFinite(w) ? w : null, f: isFinite(f) ? f : null});
+  body = body.slice(0, 200);
+  save(K.body, body);
+  render(); toast("המדידה נשמרה");
+}
+function delBody(t){
+  body = body.filter(b => b.t !== t);
+  save(K.body, body); render(); toast("המדידה נמחקה");
+}
+
+/* ============ גרפים ============ */
+function chartSVG(pts, color){
+  // pts: [{x:ms, y:number}] מהישן לחדש
+  const W = 320, H = 96, P = 10;
+  if(pts.length === 1){
+    return '<svg class="chart" viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="none" aria-hidden="true">' +
+           '<circle cx="' + (W/2) + '" cy="' + (H/2) + '" r="5" fill="' + color + '"></circle></svg>';
+  }
+  const ys = pts.map(p => p.y), xs = pts.map(p => p.x);
+  const minY = Math.min(...ys), maxY = Math.max(...ys), spanY = (maxY - minY) || 1;
+  const minX = Math.min(...xs), maxX = Math.max(...xs), spanX = (maxX - minX) || 1;
+  const X = v => P + (v - minX) / spanX * (W - 2*P);
+  const Y = v => H - P - (v - minY) / spanY * (H - 2*P);
+  const d = pts.map(p => X(p.x).toFixed(1) + "," + Y(p.y).toFixed(1)).join(" ");
+  const area = "M" + X(pts[0].x).toFixed(1) + "," + (H-P) + " L" + d.split(" ").join(" L") + " L" + X(pts[pts.length-1].x).toFixed(1) + "," + (H-P) + " Z";
+  const last = pts[pts.length-1];
+  return '<svg class="chart" viewBox="0 0 ' + W + ' ' + H + '" aria-hidden="true">' +
+    '<path d="' + area + '" fill="' + color + '" opacity=".10"></path>' +
+    '<polyline points="' + d + '" fill="none" stroke="' + color + '" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"></polyline>' +
+    pts.map(p => '<circle cx="' + X(p.x).toFixed(1) + '" cy="' + Y(p.y).toFixed(1) + '" r="2.5" fill="' + color + '" opacity=".55"></circle>').join("") +
+    '<circle cx="' + X(last.x).toFixed(1) + '" cy="' + Y(last.y).toFixed(1) + '" r="5" fill="' + color + '"></circle>' +
+    '</svg>';
+}
+function deltaTag(from, to, invert){
+  const d = +(to - from).toFixed(1);
+  if(!isFinite(d) || d === 0) return '<span class="delta flat">ללא שינוי</span>';
+  const good = invert ? d < 0 : d > 0;
+  return '<span class="delta ' + (good ? "up" : "down") + '">' + (d > 0 ? "+" : "") + d + '</span>';
+}
+function weightSeries(){
+  // כל תרגיל שנרשם לו משקל, מהישן לחדש
+  const map = new Map();
+  [...history].reverse().forEach(s => {
+    s.exercises.forEach(e => {
+      const w = parseFloat(e.weight);
+      if(!isFinite(w)) return;
+      if(!map.has(e.name)) map.set(e.name, []);
+      map.get(e.name).push({x: s.date, y: w});
+    });
+  });
+  return [...map.entries()].sort((a,b) => b[1].length - a[1].length);
+}
 
 /* ============ תצוגה ============ */
-function render(){ app.innerHTML = active ? viewWorkout() : viewHome(); }
+function render(){
+  if(view === "workout" && !active) view = "home";
+  app.innerHTML = view === "workout" ? viewWorkout()
+                : view === "progress" ? viewProgress()
+                : view === "body" ? viewBody()
+                : viewHome();
+}
+function header(title, sub){
+  return '<header class="top"><div class="top-row">' +
+    '<button class="iconbtn" data-act="home" aria-label="חזרה לדף הבית">‹</button>' +
+    '<div><div class="brand" style="font-size:17px">' + esc(title) + '</div>' +
+    (sub ? '<div class="day-meta" style="font-size:12.5px">' + esc(sub) + '</div>' : '') + '</div>' +
+    '<div class="spacer"></div>' +
+    '<button class="iconbtn" data-act="theme" aria-label="החלפת ערכת צבעים">◐</button>' +
+    '</div></header>';
+}
 
 function viewHome(){
-  const due = suggestionDue();
-  let h = "";
-  h += '<header class="top" id="top"><div class="top-row">' +
-       '<div class="brand">מאמן <span>הברזל</span></div><div class="spacer"></div>' +
-       '<button class="iconbtn" data-act="theme" title="מצב כהה/בהיר" aria-label="החלפת ערכת צבעים">◐</button>' +
-       '</div></header>';
+  let h = '<header class="top"><div class="top-row">' +
+    '<div class="brand">מאמן <span>הברזל</span></div><div class="spacer"></div>' +
+    '<button class="iconbtn" data-act="theme" aria-label="החלפת ערכת צבעים">◐</button></div></header>';
+
+  if(active){
+    const plan = planById(active.planId);
+    const t = totals();
+    h += '<div class="section-label">אימון בעיצומו</div>' +
+         '<div class="card resume"><h3>' + esc(plan.day + " · " + plan.title) + '</h3>' +
+         '<div class="day-meta">הושלמו ' + t.done + ' מתוך ' + t.total + ' סטים · התחיל ב-' +
+         new Date(active.startedAt).toLocaleTimeString("he-IL",{hour:"2-digit",minute:"2-digit"}) + '</div>' +
+         '<div class="bar" style="margin-top:12px"><i style="width:' + Math.round(t.done/t.total*100) + '%"></i></div>' +
+         '<div class="btn-row" style="margin-top:14px">' +
+         '<button class="btn" data-act="resume">חזרה לאימון</button>' +
+         '<button class="btn danger" data-act="cancel" style="width:auto; white-space:nowrap">בטל</button></div></div>';
+  }
 
   h += '<div class="section-label">תוכנית השבוע</div><div class="stack">';
   for(const p of PLANS){
     const isRest = p.kind === "cardio";
     const sets = p.exercises.reduce((a,e) => a + e.sets, 0);
-    const meta = isRest ? p.note
-      : sets + " סטים · " + p.exercises.length + " תרגילים · כ־" + Math.round(sets*3.2) + " דק׳";
+    const meta = isRest ? p.note : sets + " סטים · " + p.exercises.length + " תרגילים · כ־" + Math.round(sets*3.2) + " דק׳";
     h += '<button class="card day' + (isRest?" rest":"") + '" data-act="start" data-plan="' + p.id + '">' +
          '<div class="day-mark">' + (isRest ? "↺" : p.day.replace("יום ","")) + '</div>' +
          '<div><div class="day-title">' + esc(p.title) + '</div><div class="day-meta">' + esc(p.day) + ' · ' + esc(meta) + '</div></div>' +
@@ -597,19 +664,27 @@ function viewHome(){
   }
   h += "</div>";
 
-  if(due){
-    const list = pickSuggestions();
-    h += '<div class="section-label">גיוון חודשי</div>';
-    h += '<div class="card sugg"><h3>עבר חודש — זה הזמן לאתגר את השרירים</h3>' +
+  h += '<div class="section-label">מעקב</div><div class="stack">' +
+       '<button class="card day tool" data-act="go-progress"><div class="day-mark">↗</div>' +
+       '<div><div class="day-title">התקדמות במשקלים</div>' +
+       '<div class="day-meta">גרף לכל תרגיל, לפי מה שרשמת באימונים</div></div><div class="chev">›</div></button>' +
+       '<button class="card day tool" data-act="go-body"><div class="day-mark">⚖</div>' +
+       '<div><div class="day-title">משקל גוף ואחוז שומן</div>' +
+       '<div class="day-meta">' + (body.length ? "מדידה אחרונה: " + relDay(body[0].t) : "עוד לא נרשמה מדידה") + '</div></div>' +
+       '<div class="chev">›</div></button></div>';
+
+  if(suggestionDue()){
+    h += '<div class="section-label">גיוון חודשי</div>' +
+         '<div class="card sugg"><h3>עבר חודש — זה הזמן לאתגר את השרירים</h3>' +
          '<p>אותה תבנית אימון, זווית עבודה חדשה. אפשר להחליף עכשיו, ותמיד לחזור אחורה.</p><div style="margin-top:10px">';
-    list.forEach((s,idx) => {
+    pickSuggestions().forEach(s => {
       h += '<div class="alt"><div class="alt-txt"><b>' + esc(s.to) + '</b>' +
            '<span>' + esc(s.day) + ' · ' + esc(s.group) + ' · במקום ' + esc(s.from) + '</span></div>' +
            '<button data-act="swap" data-plan="' + s.planId + '" data-i="' + s.i + '" data-name="' + esc(s.to) + '">החלף</button></div>';
     });
     h += '</div><div class="btn-row" style="margin-top:14px">' +
-         '<button class="btn ghost" data-act="sugg-done">סיימתי, נתראה בחודש הבא</button>' +
-         '</div><button class="btn quiet" data-act="sugg-later">אולי בשבוע הבא</button></div>';
+         '<button class="btn ghost" data-act="sugg-done">סיימתי, נתראה בחודש הבא</button></div>' +
+         '<button class="btn quiet" data-act="sugg-later">אולי בשבוע הבא</button></div>';
   }
 
   const swapKeys = Object.keys(swaps);
@@ -617,10 +692,8 @@ function viewHome(){
     h += '<div class="section-label">תרגילים שהחלפת</div><div class="card"><div class="hist-lines" style="border:0;margin:0;padding:0">';
     swapKeys.forEach(k => {
       const [pid, i] = k.split(":");
-      const plan = planById(pid); if(!plan) return;
-      const ex = plan.exercises[+i]; if(!ex) return;
-      h += '<div class="hist-line"><b>' + esc(swaps[k]) + '</b>' +
-           '<em style="font-size:12.5px">' + esc(plan.day) + '</em>' +
+      const plan = planById(pid); if(!plan || !plan.exercises[+i]) return;
+      h += '<div class="hist-line"><b>' + esc(swaps[k]) + '</b><em style="font-size:12.5px">' + esc(plan.day) + '</em>' +
            '<button class="btn quiet" style="width:auto;padding:0 0 0 8px" data-act="unswap" data-plan="' + pid + '" data-i="' + i + '">שחזר</button></div>';
     });
     h += "</div></div>";
@@ -635,22 +708,20 @@ function viewHome(){
       const mins = Math.max(1, Math.round((s.endedAt - s.date)/60000));
       h += '<div class="card"><div class="hist-top"><div class="hist-date">' + esc(s.planTitle) + '</div>' +
            '<div class="hist-when">' + esc(relDay(s.date)) + '</div></div>' +
-           '<div class="day-meta">' + esc(fmtDate(s.date)) + '</div>' +
-           '<div class="hist-stats">' +
+           '<div class="day-meta">' + esc(fmtDate(s.date)) + '</div><div class="hist-stats">' +
            '<div class="stat"><b class="num">' + s.setsDone + "/" + s.setsTotal + '</b><span>סטים</span></div>' +
            '<div class="stat"><b class="num">' + mins + '</b><span>דקות</span></div>' +
            '<div class="stat"><b class="num">' + s.exercises.filter(e => e.done === e.sets).length + "/" + s.exercises.length + '</b><span>תרגילים</span></div>' +
            '</div><div class="hist-lines">';
       s.exercises.forEach(e => {
-        h += '<div class="hist-line"><b>' + esc(e.name) + '</b><em>' + e.done + "/" + e.sets +
+        const reps = (e.reps && e.reps.length) ? e.reps.join("·") + " " + (e.unit || "חזרות") : e.done + "/" + e.sets;
+        h += '<div class="hist-line"><b>' + esc(e.name) + '</b><em>' + esc(reps) +
              (e.weight ? " · " + esc(e.weight) + " ק״ג" : "") + '</em></div>';
       });
       h += "</div></div>";
     });
     h += "</div>";
-    if(history.length > 2){
-      h += '<button class="btn quiet" data-act="clear">מחק את כל ההיסטוריה (' + history.length + ' אימונים)</button>';
-    }
+    if(history.length > 2) h += '<button class="btn quiet" data-act="clear">מחק את כל ההיסטוריה (' + history.length + ' אימונים)</button>';
   }
   return h;
 }
@@ -661,28 +732,24 @@ function viewWorkout(){
   const cur = currentIndex();
   const pct = Math.round(t.done / t.total * 100);
   const elapsed = Math.max(0, Math.round((Date.now() - active.startedAt)/60000));
-  let h = "";
-
-  h += '<header class="top"><div class="top-row">' +
-       '<button class="iconbtn" data-act="home" aria-label="חזרה">‹</button>' +
-       '<div><div class="brand" style="font-size:17px">' + esc(plan.title) + '</div>' +
-       '<div class="day-meta" style="font-size:12.5px">' + esc(plan.day) + ' · ' + elapsed + ' דק׳ באימון</div></div>' +
-       '<div class="spacer"></div>' +
-       '<button class="iconbtn" data-act="theme" aria-label="החלפת ערכת צבעים">◐</button></div>' +
-       '<div class="rail"><div class="rail-head"><b class="num">' + pct + '%</b>' +
-       '<span>נותרו <b class="num">' + (t.total - t.done) + '</b> סטים ו־<b class="num">' + (t.exTotal - t.exDone) + '</b> תרגילים</span></div>' +
-       '<div class="bar"><i style="width:' + pct + '%"></i></div></div></header>';
+  let h = header(plan.title, plan.day + " · " + elapsed + " דק׳ באימון");
+  h = h.replace("</header>",
+    '<div class="rail"><div class="rail-head"><b class="num">' + pct + '%</b>' +
+    '<span>נותרו <b class="num">' + (t.total - t.done) + '</b> סטים ו־<b class="num">' + (t.exTotal - t.exDone) + '</b> תרגילים</span></div>' +
+    '<div class="bar"><i style="width:' + pct + '%"></i></div></div></header>');
 
   h += '<div class="plan-note">' + esc(plan.note) + '</div><div class="stack">';
-
   plan.exercises.forEach((ex,i) => {
     const st = active.exercises[i];
+    if(!st.reps) st.reps = new Array(ex.sets).fill("");
     const d = st.done.filter(Boolean).length;
     const isDone = d === ex.sets;
     const nextSet = st.done.indexOf(false);
     const prev = lastWeight(active.planId, i, st.name);
     const nfo = swaps[exKey(active.planId,i)] ? {en: st.name, how:""} : info(ex.name);
     const isOpen = openHow.has(i);
+    const unit = unitOf(ex.reps);
+
     h += '<div class="card ex' + (isDone ? " done" : (i === cur ? " current" : "")) + '">' +
          '<div class="ex-head"><div class="ex-idx">' + (isDone ? "✓" : (i+1)) + '</div><div style="flex:1">' +
          '<div class="ex-group">' + esc(ex.group) + '</div>' +
@@ -697,32 +764,112 @@ function viewWorkout(){
     h += '<div class="ex-body"><div class="sets">';
     for(let j=0;j<ex.sets;j++){
       const on = st.done[j];
+      const face = on ? (st.reps[j] !== "" ? st.reps[j] : "✓") : (j+1);
       h += '<button class="set' + (on ? " on" : (j === nextSet && i === cur ? " next" : "")) + '" ' +
-           'data-act="set" data-i="' + i + '" data-j="' + j + '" ' +
-           'aria-label="סט ' + (j+1) + '" aria-pressed="' + on + '">' + (on ? "✓" : (j+1)) + '</button>';
+           'data-act="set" data-i="' + i + '" data-j="' + j + '" aria-label="סט ' + (j+1) + '" aria-pressed="' + on + '">' + face + '</button>';
     }
     h += "</div>";
     if(ex.rest > 0){
       h += '<div class="tools">' +
            '<label class="pill">משקל<input class="wt num" inputmode="decimal" data-act="weight" data-i="' + i + '" ' +
            'value="' + esc(st.weight) + '" placeholder="' + (prev ? esc(prev) : "ק״ג") + '"></label>' +
-           '<button class="pill" data-act="rest" data-i="' + i + '" title="לחיצה משנה את זמן המנוחה">מנוחה <b class="num">' +
-           mmss(exRest(active.planId,i,ex)) + '</b></button></div>';
+           '<button class="pill" data-act="rest" data-i="' + i + '">מנוחה <b class="num">' + mmss(exRest(active.planId,i,ex)) + '</b></button></div>';
     }
     h += "</div>";
-    if(i === cur && !isDone && prev && !st.weight){
-      h += '<div class="hint">בפעם שעברה: ' + esc(prev) + ' ק״ג</div>';
+
+    if(d > 0){
+      h += '<div class="reps"><span class="reps-label">' + (unit === "שנ׳" ? "שניות בפועל" : "חזרות בפועל") + '</span>';
+      for(let j=0;j<ex.sets;j++){
+        h += '<input class="rep num" inputmode="numeric" data-act="rep" data-i="' + i + '" data-j="' + j + '" ' +
+             'value="' + esc(st.reps[j]) + '" placeholder="' + (j+1) + '"' + (st.done[j] ? "" : " disabled") + '>';
+      }
+      h += '<span class="reps-unit">' + esc(unit) + '</span></div>';
     }
+    if(i === cur && !isDone && prev && !st.weight) h += '<div class="hint">בפעם שעברה: ' + esc(prev) + ' ק״ג</div>';
     h += "</div>";
   });
   h += "</div>";
 
-  h += '<div class="btn-row" style="margin-top:18px"><button class="btn danger" data-act="cancel">בטל אימון</button></div>';
-
-  h += '<div class="footbar"><div class="footbar-in">' +
-       '<button class="btn" data-act="finish">' +
+  h += '<div class="btn-row" style="margin-top:18px"><button class="btn danger" data-act="cancel">בטל אימון</button></div>' +
+       '<div class="footbar"><div class="footbar-in"><button class="btn" data-act="finish">' +
        (t.done === t.total ? "סיים ושמור אימון 🎉" : "סיים ושמור (" + t.done + "/" + t.total + " סטים)") +
        '</button></div></div>';
+  return h;
+}
+
+function viewProgress(){
+  const series = weightSeries();
+  let h = header("התקדמות במשקלים", "לפי המשקל שרשמת בכל אימון");
+  if(!series.length){
+    h += '<div class="card" style="margin-top:16px"><div class="empty">אין עדיין נתוני משקל.<br>' +
+         'רשום משקל בשדה «משקל» בזמן האימון, ואחרי שני אימונים יופיע כאן גרף לכל תרגיל.</div></div>';
+    return h;
+  }
+  h += '<div class="section-label">' + series.length + ' תרגילים עם נתונים</div><div class="stack">';
+  series.forEach(([name, pts]) => {
+    const first = pts[0].y, last = pts[pts.length-1].y;
+    const nfo = info(name);
+    h += '<div class="card"><div class="ch-top"><div><div class="ch-name">' + esc(name) + '</div>' +
+         '<div class="ch-en">' + esc(nfo.en) + '</div></div>' +
+         '<div class="ch-now num">' + last + ' <span style="font-size:13px; font-weight:400">ק״ג</span></div></div>' +
+         '<div style="margin-top:8px">' + chartSVG(pts, "var(--accent)") + '</div>' +
+         '<div class="ch-axis"><span>' + esc(fmtShort(pts[0].x)) + '</span>' +
+         '<span>' + pts.length + ' מדידות</span>' +
+         '<span>' + esc(fmtShort(pts[pts.length-1].x)) + '</span></div>' +
+         '<div style="margin-top:10px; display:flex; align-items:center; gap:8px; font-size:13.5px; color:var(--muted)">' +
+         'מההתחלה: ' + deltaTag(first, last, false) + ' ק״ג</div></div>';
+  });
+  h += "</div>";
+  return h;
+}
+
+function viewBody(){
+  let h = header("משקל גוף ואחוז שומן", "מדידה שבועית, באותו יום ובאותה שעה");
+  h += '<div class="card" style="margin-top:16px"><div class="fields">' +
+       '<div class="field"><label for="bw">משקל גוף (ק״ג)</label><input id="bw" inputmode="decimal" placeholder="78.4"></div>' +
+       '<div class="field"><label for="bf">אחוז שומן (%)</label><input id="bf" inputmode="decimal" placeholder="18.5"></div>' +
+       '</div><button class="btn" style="margin-top:14px" data-act="addbody">רשום מדידה</button>' +
+       '<div class="hint">הכי מדויק: בבוקר, אחרי שירותים, לפני אוכל. אחוז שומן ממכשיר ביתי פחות מדויק — מה שחשוב זה המגמה, לא המספר הבודד.</div></div>';
+
+  const wPts = [...body].filter(b => b.w != null).reverse().map(b => ({x:b.t, y:b.w}));
+  const fPts = [...body].filter(b => b.f != null).reverse().map(b => ({x:b.t, y:b.f}));
+
+  if(wPts.length){
+    const first = wPts[0].y, last = wPts[wPts.length-1].y;
+    h += '<div class="section-label">משקל גוף</div><div class="card">' +
+         '<div class="ch-top"><div class="ch-name">' + last + ' ק״ג</div>' +
+         '<div class="ch-now" style="font-size:14px; font-weight:400; color:var(--muted)">' + deltaTag(first, last, true) + ' ק״ג מההתחלה</div></div>' +
+         chartSVG(wPts, "var(--accent)") +
+         '<div class="ch-axis"><span>' + esc(fmtShort(wPts[0].x)) + '</span><span>' + esc(fmtShort(wPts[wPts.length-1].x)) + '</span></div></div>';
+  }
+  if(fPts.length){
+    const first = fPts[0].y, last = fPts[fPts.length-1].y;
+    h += '<div class="section-label">אחוז שומן</div><div class="card">' +
+         '<div class="ch-top"><div class="ch-name">' + last + '%</div>' +
+         '<div class="ch-now" style="font-size:14px; font-weight:400; color:var(--muted)">' + deltaTag(first, last, true) + '% מההתחלה</div></div>' +
+         chartSVG(fPts, "var(--good)") +
+         '<div class="ch-axis"><span>' + esc(fmtShort(fPts[0].x)) + '</span><span>' + esc(fmtShort(fPts[fPts.length-1].x)) + '</span></div></div>';
+  }
+
+  h += '<div class="section-label">מדידות אחרונות</div><div class="card">';
+  if(!body.length){
+    h += '<div class="empty">עוד לא נרשמה מדידה. שקילה אחת בשבוע מספיקה בהחלט.</div>';
+  }else{
+    body.slice(0,10).forEach((b,i) => {
+      const prev = body[i+1];
+      let diff = "";
+      if(prev && b.w != null && prev.w != null){
+        const d = +(b.w - prev.w).toFixed(1);
+        if(d !== 0) diff = ' <span style="color:var(--muted); font-weight:400">(' + (d>0?"+":"") + d + ')</span>';
+      }
+      h += '<div class="log-row"' + (i === 0 ? ' style="border-top:0"' : '') + '>' +
+           '<div><div>' + esc(fmtShort(b.t)) + '</div><div class="d">' + esc(relDay(b.t)) + '</div></div>' +
+           '<div class="v">' + (b.w != null ? b.w + " ק״ג" + diff : "") +
+           (b.w != null && b.f != null ? " · " : "") + (b.f != null ? b.f + "%" : "") + '</div>' +
+           '<button class="x" data-act="delbody" data-t="' + b.t + '" aria-label="מחק מדידה">×</button></div>';
+    });
+  }
+  h += "</div>";
   return h;
 }
 
@@ -736,10 +883,15 @@ document.addEventListener("click", e => {
   else if(act === "how"){ const i = +el.dataset.i; openHow.has(i) ? openHow.delete(i) : openHow.add(i); render(); }
   else if(act === "finish"){ finishWorkout(); }
   else if(act === "cancel"){ if(confirm("לבטל את האימון בלי לשמור?")) cancelWorkout(); }
-  else if(act === "home"){ render(); window.scrollTo(0,0); }
+  else if(act === "home"){ view = "home"; render(); window.scrollTo(0,0); }
+  else if(act === "resume"){ view = "workout"; render(); window.scrollTo(0,0); }
+  else if(act === "go-progress"){ view = "progress"; render(); window.scrollTo(0,0); }
+  else if(act === "go-body"){ view = "body"; render(); window.scrollTo(0,0); }
+  else if(act === "addbody"){ addBody(); }
+  else if(act === "delbody"){ delBody(+el.dataset.t); }
   else if(act === "skiprest"){ endRest(false); }
   else if(act === "addrest"){ rest.end += 15000; rest.total += 15; tickRest(); }
-  else if(act === "swap"){ applySwap(el.dataset.plan, +el.dataset.i, el.dataset.name); el.textContent = "הוחלף ✓"; el.classList.add("applied"); }
+  else if(act === "swap"){ applySwap(el.dataset.plan, +el.dataset.i, el.dataset.name); }
   else if(act === "unswap"){ applySwap(el.dataset.plan, +el.dataset.i, planById(el.dataset.plan).exercises[+el.dataset.i].name); }
   else if(act === "sugg-done"){ snoozeSugg(30); }
   else if(act === "sugg-later"){ snoozeSugg(7); }
@@ -753,19 +905,27 @@ document.addEventListener("click", e => {
   }
 });
 document.addEventListener("input", e => {
-  const el = e.target.closest('[data-act="weight"]'); if(!el || !active) return;
-  active.exercises[+el.dataset.i].weight = el.value.trim();
-  save(K.active, active);
+  const el = e.target.closest("[data-act]"); if(!el || !active) return;
+  if(el.dataset.act === "weight"){
+    active.exercises[+el.dataset.i].weight = el.value.trim();
+    save(K.active, active);
+  }else if(el.dataset.act === "rep"){
+    const i = +el.dataset.i, j = +el.dataset.j;
+    const v = el.value.replace(/[^\d]/g, "").slice(0,3);
+    if(v !== el.value) el.value = v;
+    active.exercises[i].reps[j] = v === "" ? "" : +v;
+    save(K.active, active);
+    const chip = document.querySelector('.set[data-i="' + i + '"][data-j="' + j + '"]');
+    if(chip && active.exercises[i].done[j]) chip.textContent = v === "" ? "✓" : v;
+  }
 });
-try{
-  const th = load(K.theme, null);
-  if(th) document.documentElement.setAttribute("data-theme", th);
-}catch(e){}
+try{ const th = load(K.theme, null); if(th) document.documentElement.setAttribute("data-theme", th); }catch(e){}
 
 render();
+if(active) keepAwake(true);
 setInterval(() => {
   const t = document.activeElement;
   const typing = t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA");
-  if(active && !rest.id && !typing) render();
-}, 60000); // רענון מונה הדקות
+  if(view === "workout" && !rest.id && !typing) render();
+}, 60000);
 </script>
