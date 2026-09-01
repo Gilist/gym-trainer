@@ -743,6 +743,11 @@ create table if not exists gym.state (
 grant select, insert, update on gym.state to authenticated;
 
 alter table gym.state enable row level security;
+
+-- אפשר להריץ שוב ושוב בלי שגיאות
+drop policy if exists "own_select" on gym.state;
+drop policy if exists "own_insert" on gym.state;
+drop policy if exists "own_update" on gym.state;
 create policy "own_select" on gym.state for select using (auth.uid() = user_id);
 create policy "own_insert" on gym.state for insert with check (auth.uid() = user_id);
 create policy "own_update" on gym.state for update using (auth.uid() = user_id);`;
