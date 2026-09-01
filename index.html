@@ -1193,8 +1193,8 @@ function viewSync(){
 
   if(!syncOn()){
     h += '<div class="section-label">הגדרה חד-פעמית</div><div class="card"><ol class="steps">' +
-         '<li>היכנס ל-<code>supabase.com</code> ופתח חשבון חינמי (בלי כרטיס אשראי).</li>' +
-         '<li>לחץ <b>New project</b>. שם: <code>gym-trainer</code>, אזור: <b>Frankfurt (eu-central-1)</b>. סיסמת הדאטהבייס נשמרת אצלך — לא נצטרך אותה.</li>' +
+         '<li>היכנס ל-<code>supabase.com</code>. אפשר להשתמש ב<b>פרויקט קיים</b> — הטבלה שלנו עצמאית ולא נוגעת בשאר הנתונים שבו. אם אין לך פרויקט, פתח אחד ב-<b>Frankfurt (eu-central-1)</b>.</li>' +
+         '<li>בחר את הפרויקט שבו תשתמש. תוכנית החינם מוגבלת ל-2 פרויקטים פעילים, ולכן שימוש חוזר בפרויקט קיים עדיף על פתיחת חדש.</li>' +
          '<li>בתפריט השמאלי: <b>SQL Editor</b> ← הדבק את הקוד הזה ולחץ <b>Run</b>:' +
          '<div class="sqlbox">' + esc(SB_SQL) + '</div></li>' +
          '<li><b>Authentication ← Emails ← Magic Link</b>: ודא שבגוף המייל מופיע <code>{{ .Token }}</code>. זה מה ששולח קוד בן 6 ספרות במקום קישור (קישור לא עובד טוב באפליקציה מהמסך הבית).</li>' +
