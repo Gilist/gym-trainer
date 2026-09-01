@@ -1,0 +1,702 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#EBEDF1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="מאמן הברזל">
+<title>מאמן הברזל</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700&family=Rubik:wght@600;800&display=swap">
+<style>
+:root{
+  --ground:#EBEDF1; --surface:#FFFFFF; --surface-2:#F4F5F8;
+  --ink:#14181D; --muted:#5E6875; --line:#D8DDE4;
+  --accent:#1F4FD8; --accent-ink:#FFFFFF; --accent-soft:#E4EAFB;
+  --hot:#C81F38; --hot-soft:#FBE6E9;
+  --good:#0E8F5F; --good-soft:#E1F4EC;
+  --shadow:0 1px 2px rgba(20,24,29,.06), 0 8px 24px -12px rgba(20,24,29,.25);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#0D1015; --surface:#161B22; --surface-2:#1D232C;
+    --ink:#E7EBF1; --muted:#94A0AF; --line:#28303A;
+    --accent:#6D8FFF; --accent-ink:#0D1015; --accent-soft:#1B2440;
+    --hot:#FF6B7C; --hot-soft:#331B21;
+    --good:#3AD79E; --good-soft:#13302A;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px -14px rgba(0,0,0,.8);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0D1015; --surface:#161B22; --surface-2:#1D232C;
+  --ink:#E7EBF1; --muted:#94A0AF; --line:#28303A;
+  --accent:#6D8FFF; --accent-ink:#0D1015; --accent-soft:#1B2440;
+  --hot:#FF6B7C; --hot-soft:#331B21;
+  --good:#3AD79E; --good-soft:#13302A;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px -14px rgba(0,0,0,.8);
+}
+*{box-sizing:border-box}
+body{
+  direction:rtl; margin:0; background:var(--ground); color:var(--ink);
+  font-family:"Heebo",system-ui,"Segoe UI",sans-serif; font-size:16px; line-height:1.5;
+  -webkit-text-size-adjust:100%;
+}
+h1,h2,h3{font-family:"Rubik","Heebo",system-ui,sans-serif; margin:0; text-wrap:balance; letter-spacing:-.01em}
+button{font:inherit; color:inherit; cursor:pointer; border:0; background:none}
+input{font:inherit}
+.num{font-variant-numeric:tabular-nums}
+
+.app{max-width:600px; margin:0 auto; padding:0 16px 140px}
+
+/* ---------- top bar ---------- */
+.top{
+  position:sticky; top:0; z-index:30; background:var(--ground);
+  padding:14px 0 10px; margin:0 -16px; padding-inline:16px;
+  border-bottom:1px solid transparent;
+}
+.top.stuck{border-bottom-color:var(--line)}
+.top-row{display:flex; align-items:center; gap:10px}
+.brand{font-family:"Rubik"; font-weight:800; font-size:19px; letter-spacing:-.02em}
+.brand span{color:var(--accent)}
+.spacer{flex:1}
+.iconbtn{
+  width:38px; height:38px; border-radius:12px; display:grid; place-items:center;
+  background:var(--surface); border:1px solid var(--line); font-size:15px;
+}
+.iconbtn:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+
+/* ---------- progress rail ---------- */
+.rail{margin-top:12px}
+.rail-head{display:flex; align-items:baseline; gap:8px; font-size:13.5px; color:var(--muted); margin-bottom:6px}
+.rail-head b{color:var(--ink); font-weight:700}
+.bar{height:8px; border-radius:99px; background:var(--line); overflow:hidden}
+.bar i{display:block; height:100%; background:var(--accent); border-radius:99px; transition:width .35s cubic-bezier(.2,.8,.2,1)}
+
+/* ---------- cards ---------- */
+.card{
+  background:var(--surface); border:1px solid var(--line); border-radius:18px;
+  padding:16px; box-shadow:var(--shadow);
+}
+.stack{display:flex; flex-direction:column; gap:12px}
+.section-label{
+  font-size:13px; font-weight:700; color:var(--muted); margin:22px 2px 10px;
+}
+.plan-note{font-size:13.5px; color:var(--muted); margin:16px 2px 12px; line-height:1.45}
+
+/* day cards */
+.day{display:flex; align-items:center; gap:14px; width:100%; text-align:start}
+.day-mark{
+  width:46px; height:46px; flex:none; border-radius:14px; display:grid; place-items:center;
+  background:var(--accent-soft); color:var(--accent); font-family:"Rubik"; font-weight:800; font-size:18px;
+}
+.day.rest .day-mark{background:var(--surface-2); color:var(--muted)}
+.day-title{font-family:"Rubik"; font-weight:600; font-size:17px}
+.day-meta{font-size:13.5px; color:var(--muted)}
+.chev{color:var(--muted); font-size:20px; margin-inline-start:auto}
+
+/* exercise card */
+.ex{transition:border-color .2s, opacity .2s}
+.ex.current{border-color:var(--accent); box-shadow:0 0 0 1px var(--accent), var(--shadow)}
+.ex.done{opacity:.62}
+.ex-head{display:flex; gap:12px; align-items:flex-start}
+.ex-idx{
+  width:26px; height:26px; flex:none; border-radius:9px; background:var(--surface-2);
+  display:grid; place-items:center; font-size:12.5px; font-weight:700; color:var(--muted); margin-top:2px;
+}
+.ex.done .ex-idx{background:var(--good-soft); color:var(--good)}
+.ex-group{font-size:12.5px; font-weight:700; color:var(--accent)}
+.ex.done .ex-group{color:var(--good)}
+.ex-name{font-family:"Rubik"; font-weight:600; font-size:17px; line-height:1.3; margin-top:1px}
+.ex-sub{font-size:13.5px; color:var(--muted); margin-top:3px}
+.ex-body{margin-top:14px; display:flex; flex-wrap:wrap; align-items:center; gap:10px}
+.sets{display:flex; gap:8px; flex-wrap:wrap}
+.set{
+  width:46px; height:46px; border-radius:14px; border:1.5px solid var(--line);
+  background:var(--surface-2); font-family:"Rubik"; font-weight:600; font-size:15px; color:var(--muted);
+  display:grid; place-items:center; transition:transform .12s, background .15s, color .15s, border-color .15s;
+}
+.set:active{transform:scale(.93)}
+.set.on{background:var(--good); border-color:var(--good); color:#fff}
+.set.next{border-color:var(--accent); color:var(--accent); background:var(--surface)}
+.tools{display:flex; gap:8px; margin-inline-start:auto; align-items:center}
+.pill{
+  border:1px solid var(--line); background:var(--surface-2); border-radius:99px;
+  padding:7px 12px; font-size:13px; color:var(--muted); display:inline-flex; gap:6px; align-items:center;
+}
+.pill b{color:var(--ink); font-weight:700}
+.wt{width:52px; text-align:center; border:0; background:transparent; padding:0;
+  color:var(--ink); font-weight:700}
+.wt::placeholder{color:var(--muted); font-weight:400}
+.hint{font-size:12.5px; color:var(--muted); margin-top:8px}
+
+/* buttons */
+.btn{
+  border-radius:14px; padding:14px 18px; font-family:"Rubik"; font-weight:600; font-size:16px;
+  background:var(--accent); color:var(--accent-ink); text-align:center; width:100%;
+  transition:transform .12s, filter .15s;
+}
+.btn:active{transform:scale(.985)}
+.btn.ghost{background:var(--surface); color:var(--ink); border:1px solid var(--line)}
+.btn.quiet{background:transparent; color:var(--muted); font-weight:500; font-size:14.5px; padding:10px}
+.btn.danger{background:transparent; color:var(--hot); border:1px solid var(--line)}
+.btn-row{display:flex; gap:10px}
+
+/* history */
+.hist-top{display:flex; align-items:baseline; gap:8px}
+.hist-date{font-family:"Rubik"; font-weight:600; font-size:16px}
+.hist-when{font-size:13px; color:var(--muted); margin-inline-start:auto}
+.hist-stats{display:flex; gap:16px; margin-top:10px; flex-wrap:wrap}
+.stat{display:flex; flex-direction:column}
+.stat b{font-family:"Rubik"; font-size:19px; font-weight:800}
+.stat span{font-size:12px; color:var(--muted)}
+.hist-lines{margin-top:12px; border-top:1px solid var(--line); padding-top:10px;
+  display:flex; flex-direction:column; gap:6px; font-size:14px}
+.hist-line{display:flex; gap:10px; color:var(--muted)}
+.hist-line b{color:var(--ink); font-weight:500}
+.hist-line em{font-style:normal; margin-inline-start:auto; font-variant-numeric:tabular-nums}
+
+/* suggestion */
+.sugg{border-color:var(--accent); background:linear-gradient(180deg,var(--accent-soft),var(--surface) 55%)}
+.sugg h3{font-size:17px}
+.sugg p{margin:6px 0 0; font-size:14px; color:var(--muted)}
+.alt{display:flex; align-items:center; gap:10px; padding:10px 0; border-top:1px solid var(--line)}
+.alt-txt{font-size:14px}
+.alt-txt b{display:block; font-weight:500}
+.alt-txt span{font-size:12.5px; color:var(--muted)}
+.alt button{border:1px solid var(--accent); color:var(--accent); border-radius:99px; padding:7px 14px;
+  font-size:13.5px; font-weight:700; margin-inline-start:auto; white-space:nowrap}
+.alt button.applied{border-color:var(--good); color:var(--good)}
+
+/* rest sheet */
+.sheet{
+  position:fixed; inset-inline:0; bottom:0; z-index:50; background:var(--surface);
+  border-top:1px solid var(--line); border-radius:22px 22px 0 0; padding:18px 18px calc(18px + env(safe-area-inset-bottom));
+  box-shadow:0 -14px 40px -20px rgba(0,0,0,.5); transform:translateY(110%); transition:transform .32s cubic-bezier(.2,.8,.2,1);
+}
+.sheet.up{transform:translateY(0)}
+.sheet-in{max-width:600px; margin:0 auto; display:flex; align-items:center; gap:16px}
+.ring{position:relative; width:88px; height:88px; flex:none}
+.ring svg{transform:rotate(90deg) scaleX(-1)}
+.ring-num{
+  position:absolute; inset:0; display:grid; place-items:center;
+  font-family:"Rubik"; font-weight:800; font-size:22px; font-variant-numeric:tabular-nums;
+}
+.sheet-t{font-family:"Rubik"; font-weight:600; font-size:16px}
+.sheet-s{font-size:13.5px; color:var(--muted); margin-top:2px}
+.sheet-btns{display:flex; gap:8px; margin-top:10px}
+.sheet-btns button{border:1px solid var(--line); border-radius:99px; padding:9px 16px; font-size:14px; font-weight:600; white-space:nowrap}
+.sheet-btns button.pri{background:var(--accent); color:var(--accent-ink); border-color:var(--accent)}
+
+/* finish bar */
+.footbar{
+  position:fixed; inset-inline:0; bottom:0; z-index:40; padding:12px 16px calc(12px + env(safe-area-inset-bottom));
+  background:linear-gradient(180deg,transparent,var(--ground) 32%);
+}
+.footbar-in{max-width:600px; margin:0 auto}
+
+.empty{text-align:center; color:var(--muted); font-size:14.5px; padding:26px 10px}
+.toast{
+  position:fixed; inset-inline:0; bottom:96px; z-index:60; display:flex; justify-content:center;
+  pointer-events:none; opacity:0; transition:opacity .25s;
+}
+.toast.show{opacity:1}
+.toast div{background:var(--ink); color:var(--ground); padding:10px 16px; border-radius:99px; font-size:14px}
+@media (prefers-reduced-motion:reduce){*{transition:none !important}}
+</style>
+
+<div class="app" id="app"></div>
+
+<div class="sheet" id="sheet" hidden>
+  <div class="sheet-in">
+    <div class="ring">
+      <svg width="88" height="88" viewBox="0 0 88 88" aria-hidden="true">
+        <circle cx="44" cy="44" r="38" fill="none" stroke="var(--line)" stroke-width="8"></circle>
+        <circle id="ringArc" cx="44" cy="44" r="38" fill="none" stroke="var(--accent)" stroke-width="8"
+                stroke-linecap="round" stroke-dasharray="238.76" stroke-dashoffset="0"></circle>
+      </svg>
+      <div class="ring-num" id="ringNum">1:00</div>
+    </div>
+    <div style="flex:1">
+      <div class="sheet-t" id="sheetT">מנוחה</div>
+      <div class="sheet-s" id="sheetS">הבא בתור…</div>
+      <div class="sheet-btns">
+        <button class="pri" data-act="skiprest">סיים מנוחה</button>
+        <button data-act="addrest">‎+15 שנ׳</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"><div id="toastMsg"></div></div>
+
+<script>
+"use strict";
+
+/* ============ תוכנית האימונים ============ */
+const PLANS = [
+  {
+    id:"a", day:"יום א׳", title:"כוח ובסיס", kind:"strength",
+    note:"טווח חזרות נמוך, משקל כבד. מנוחה ארוכה בתרגילים המורכבים.",
+    exercises:[
+      {group:"רגליים", name:"סקוואט חופשי (מוט)", sets:3, reps:"6-8 חזרות", rest:90,
+       alts:["סקוואט קדמי (Front Squat)","האק סקוואט במכונה","סקוואט גובלט עם משקולת"]},
+      {group:"חזה", name:"לחיצת חזה במוט (שטוח)", sets:3, reps:"6-8 חזרות", rest:90,
+       alts:["לחיצת חזה משקולות (שטוח)","לחיצת חזה במכונת האמר","מקבילים עם משקל נוסף"]},
+      {group:"גב", name:"מתח (או פולי רחב)", sets:3, reps:"מקסימום חזרות", rest:90,
+       alts:["מתח באחיזה ניטרלית","חתירה במוט בהרכנה","פולי רחב באחיזה הפוכה"]},
+      {group:"כתפיים", name:"לחיצת כתפיים במוט (עמידה)", sets:3, reps:"8-10 חזרות", rest:90,
+       alts:["לחיצת ארנולד בישיבה","Push Press","לחיצת כתפיים במכונה"]},
+      {group:"יד אחורית", name:"פשיטת מרפקים בכבל", sets:2, reps:"12-15 חזרות", rest:60,
+       alts:["פשיטת מרפקים בכבל באחיזה הפוכה","מקבילים לטרייספס","לחיצה צרפתית בשכיבה"]},
+      {group:"יד קדמית", name:"כפיפת מרפקים במוט W", sets:2, reps:"10-12 חזרות", rest:60,
+       alts:["כפיפת מרפקים במוט ישר","כפיפה בכבל תחתון","כפיפת ריכוז (Concentration)"]},
+      {group:"ליבה", name:"פשיטות גב", sets:3, reps:"15 חזרות", rest:60,
+       alts:["Good Morning במשקל קל","גשר ירכיים (Hip Thrust)","Bird-Dog"]}
+    ]
+  },
+  {id:"b", day:"יום ב׳", title:"מנוחה / אירובי", kind:"cardio", note:"30 דקות אירובי קל עד בינוני.",
+   exercises:[{group:"אירובי", name:"אירובי מתון", sets:1, reps:"30 דקות", rest:0, alts:["הליכה בשיפוע","אופניים","שחייה"]}]},
+  {
+    id:"c", day:"יום ג׳", title:"נפח והיפרטרופיה", kind:"mass",
+    note:"אימון מאסה — מנוחה של דקה וחצי בתרגילים המורכבים.",
+    exercises:[
+      {group:"רגליים", name:"לחיצת רגליים במכונה", sets:3, reps:"10-12 חזרות", rest:90,
+       alts:["האק סקוואט","סקוואט גובלט","לחיצת רגל אחת במכונה"]},
+      {group:"חזה", name:"לחיצת חזה משקולות (שיפוע חיובי)", sets:3, reps:"10-12 חזרות", rest:90,
+       alts:["לחיצת מוט בשיפוע חיובי","פרפר בשיפוע חיובי","מכונת לחיצה בשיפוע"]},
+      {group:"גב", name:"חתירה בטי-באר (T-Bar)", sets:3, reps:"10-12 חזרות", rest:90,
+       alts:["חתירה במוט בהרכנה","חתירה במשקולת יד אחת","חתירה בכבל בישיבה"]},
+      {group:"כתפיים", name:"לחיצת משקולות בישיבה", sets:3, reps:"10-12 חזרות", rest:90,
+       alts:["לחיצת ארנולד","לחיצת כתפיים במכונה","לחיצת מוט בישיבה"]},
+      {group:"יד אחורית", name:"לחיצה צרפתית (EZ Bar)", sets:2, reps:"10-12 חזרות", rest:60,
+       alts:["פשיטה מעל הראש בכבל","Skull Crushers עם משקולות","מקבילים לטרייספס"]},
+      {group:"יד קדמית", name:"כפיפת מרפקים (משקולות)", sets:2, reps:"12-15 חזרות", rest:60,
+       alts:["כפיפה בשיפוע (Incline Curl)","Spider Curl","כפיפה בכבל"]},
+      {group:"ליבה", name:"פלאנק (Plank)", sets:3, reps:"60 שניות", rest:60,
+       alts:["פלאנק צד","Ab Wheel","Dead Bug"]}
+    ]
+  },
+  {id:"d", day:"יום ד׳", title:"מנוחה / אירובי", kind:"cardio", note:"30 דקות אירובי קל עד בינוני.",
+   exercises:[{group:"אירובי", name:"אירובי מתון", sets:1, reps:"30 דקות", rest:0, alts:["הליכה בשיפוע","אופניים","חתירה"]}]},
+  {
+    id:"e", day:"יום ה׳", title:"פיסול ובידוד", kind:"pump",
+    note:"טווחים גבוהים, מנוחה קצרה של דקה.",
+    exercises:[
+      {group:"רגליים", name:"סקוואט בולגרי (או לאנג׳ים)", sets:3, reps:"12-15 חזרות", rest:60,
+       alts:["לאנג׳ים בהליכה","Step-Up על ספסל","סקוואט סומו גובלט"]},
+      {group:"חזה", name:"פרפר בכבלים / מכונה", sets:3, reps:"12-15 חזרות", rest:60,
+       alts:["פרפר במשקולות בשכיבה","Cable Crossover מלמעלה","שכיבות שמיכה עם משקל"]},
+      {group:"גב", name:"פולי עליון אחיזה צרה", sets:3, reps:"12-15 חזרות", rest:60,
+       alts:["פולי עליון אחיזה ניטרלית","Straight-Arm Pulldown","חתירה בכבל אחיזה צרה"]},
+      {group:"כתפיים", name:"הרחקת זרועות לצדדים", sets:3, reps:"15 חזרות", rest:60,
+       alts:["הרחקה בכבל יד אחת","הרחקה בהרכנה (כתף אחורית)","Upright Row באחיזה רחבה"]},
+      {group:"יד אחורית", name:"פשיטה מעל הראש", sets:2, reps:"12-15 חזרות", rest:60,
+       alts:["פשיטה בכבל עם חבל מעל הראש","Kickback במשקולת","לחיצה צרה במוט"]},
+      {group:"יד קדמית", name:"פטישים (Hammer Curls)", sets:2, reps:"12-15 חזרות", rest:60,
+       alts:["כפיפת Zottman","כפיפה בכבל עם חבל","Reverse Curl"]},
+      {group:"ליבה", name:"הרמת רגליים בתלייה", sets:3, reps:"15 חזרות", rest:60,
+       alts:["הרמת ברכיים במקבילים","Reverse Crunch","הרמת רגליים עם סיבוב"]}
+    ]
+  }
+];
+
+/* ============ אחסון ============ */
+const K = {hist:"gt.history", active:"gt.active", rest:"gt.rest", swaps:"gt.swaps", sugg:"gt.sugg", theme:"gt.theme"};
+function load(k, dflt){ try{ const v=localStorage.getItem(k); return v?JSON.parse(v):dflt; }catch(e){ return dflt; } }
+function save(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
+
+let history   = load(K.hist, []);
+let active    = load(K.active, null);
+let restOver  = load(K.rest, {});     // "planId:exIndex" -> seconds
+let swaps     = load(K.swaps, {});    // "planId:exIndex" -> שם התרגיל החלופי
+let sugg      = load(K.sugg, null);   // {nextAt: ms}
+if(!sugg){ sugg = {nextAt: Date.now() + 30*864e5}; save(K.sugg, sugg); }
+
+/* ============ עזרים ============ */
+const app = document.getElementById("app");
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const planById = id => PLANS.find(p => p.id === id);
+const exKey = (planId, i) => planId + ":" + i;
+function exName(planId, i, ex){ return swaps[exKey(planId,i)] || ex.name; }
+function exRest(planId, i, ex){ const o = restOver[exKey(planId,i)]; return typeof o === "number" ? o : ex.rest; }
+function mmss(s){ const m = Math.floor(s/60), r = s%60; return m + ":" + String(r).padStart(2,"0"); }
+function fmtDate(ms){
+  const d = new Date(ms);
+  return d.toLocaleDateString("he-IL", {weekday:"long", day:"numeric", month:"long"});
+}
+function relDay(ms){
+  const days = Math.floor((new Date().setHours(0,0,0,0) - new Date(ms).setHours(0,0,0,0)) / 864e5);
+  if(days <= 0) return "היום";
+  if(days === 1) return "אתמול";
+  if(days < 7) return "לפני " + days + " ימים";
+  if(days < 14) return "לפני שבוע";
+  return "לפני " + Math.floor(days/7) + " שבועות";
+}
+let toastTimer;
+function toast(msg){
+  const t = document.getElementById("toast");
+  document.getElementById("toastMsg").textContent = msg;
+  t.classList.add("show"); clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove("show"), 1800);
+}
+function lastWeight(planId, i, name){
+  for(const s of history){
+    if(s.planId !== planId) continue;
+    const e = s.exercises[i];
+    if(e && e.name === name && e.weight) return e.weight;
+  }
+  return "";
+}
+
+/* ============ מצב האימון ============ */
+function startWorkout(planId){
+  const plan = planById(planId);
+  active = {
+    planId, startedAt: Date.now(),
+    exercises: plan.exercises.map((ex,i) => ({
+      name: exName(planId,i,ex),
+      done: new Array(ex.sets).fill(false),
+      weight: ""
+    }))
+  };
+  save(K.active, active);
+  render();
+  window.scrollTo(0,0);
+}
+function totals(){
+  const plan = planById(active.planId);
+  let total = 0, done = 0, exDone = 0;
+  plan.exercises.forEach((ex,i) => {
+    total += ex.sets;
+    const d = active.exercises[i].done.filter(Boolean).length;
+    done += d;
+    if(d === ex.sets) exDone++;
+  });
+  return {total, done, exDone, exTotal: plan.exercises.length};
+}
+function currentIndex(){
+  const plan = planById(active.planId);
+  for(let i=0;i<plan.exercises.length;i++){
+    if(active.exercises[i].done.some(v => !v)) return i;
+  }
+  return plan.exercises.length - 1;
+}
+
+/* ============ טיימר מנוחה ============ */
+let rest = {end:0, total:0, id:null};
+const sheet = document.getElementById("sheet");
+let audioCtx = null;
+function beep(){
+  try{
+    audioCtx = audioCtx || new (window.AudioContext||window.webkitAudioContext)();
+    [0,180,360].forEach((delay,k) => {
+      const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+      const t = audioCtx.currentTime + delay/1000;
+      o.frequency.value = k === 2 ? 880 : 660; o.type = "sine";
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.exponentialRampToValueAtTime(0.25, t+0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001, t+0.18);
+      o.connect(g); g.connect(audioCtx.destination); o.start(t); o.stop(t+0.2);
+    });
+  }catch(e){}
+  if(navigator.vibrate) navigator.vibrate([120,60,120]);
+}
+function startRest(sec, label){
+  if(sec <= 0) return;
+  rest.total = sec; rest.end = Date.now() + sec*1000;
+  document.getElementById("sheetT").textContent = "מנוחה " + mmss(sec);
+  document.getElementById("sheetS").textContent = label;
+  sheet.hidden = false;
+  setTimeout(() => sheet.classList.add("up"), 10);
+  clearInterval(rest.id);
+  tickRest();
+  rest.id = setInterval(tickRest, 200);
+}
+function tickRest(){
+  const left = Math.max(0, Math.round((rest.end - Date.now())/1000));
+  document.getElementById("ringNum").textContent = mmss(left);
+  const C = 238.76;
+  document.getElementById("ringArc").style.strokeDashoffset = String(C * (1 - left/rest.total));
+  if(left <= 0){ endRest(true); }
+}
+function endRest(ring){
+  clearInterval(rest.id); rest.id = null;
+  sheet.classList.remove("up");
+  setTimeout(() => { if(!rest.id) sheet.hidden = true; }, 340);
+  if(ring) beep();
+}
+
+/* ============ פעולות ============ */
+function toggleSet(i, j){
+  const plan = planById(active.planId);
+  const st = active.exercises[i];
+  const now = !st.done[j];
+  st.done[j] = now;
+  save(K.active, active);
+  render();
+  if(now){
+    const t = totals();
+    if(t.done === t.total){ endRest(false); return; }
+    const restSec = exRest(active.planId, i, plan.exercises[i]);
+    const nextIdx = currentIndex();
+    const label = nextIdx === i
+      ? "הבא: סט " + (st.done.filter(Boolean).length + 1) + " מתוך " + plan.exercises[i].sets + " · " + st.name
+      : "הבא: " + active.exercises[nextIdx].name;
+    startRest(restSec, label);
+  }
+}
+function cycleRest(i){
+  const plan = planById(active ? active.planId : null);
+  const opts = [45,60,75,90,120,150];
+  const cur = exRest(active.planId, i, plan.exercises[i]);
+  const next = opts[(opts.indexOf(cur) + 1 + opts.length) % opts.length] || 60;
+  restOver[exKey(active.planId,i)] = next;
+  save(K.rest, restOver);
+  render();
+  toast("מנוחה: " + mmss(next));
+}
+function finishWorkout(){
+  const plan = planById(active.planId);
+  const t = totals();
+  const session = {
+    planId: active.planId, planTitle: plan.day + " · " + plan.title,
+    date: active.startedAt, endedAt: Date.now(),
+    setsDone: t.done, setsTotal: t.total,
+    exercises: plan.exercises.map((ex,i) => ({
+      name: active.exercises[i].name,
+      group: ex.group,
+      done: active.exercises[i].done.filter(Boolean).length,
+      sets: ex.sets,
+      weight: active.exercises[i].weight
+    }))
+  };
+  history.unshift(session);
+  history = history.slice(0, 12);
+  save(K.hist, history);
+  active = null; localStorage.removeItem(K.active);
+  endRest(false);
+  render(); window.scrollTo(0,0);
+  toast("האימון נשמר 💪");
+}
+function cancelWorkout(){
+  active = null; localStorage.removeItem(K.active);
+  endRest(false); render(); window.scrollTo(0,0);
+}
+
+/* ============ הצעת גיוון חודשית ============ */
+function suggestionDue(){ return Date.now() >= sugg.nextAt; }
+function pickSuggestions(){
+  // תרגיל אחד לכל יום אימון, לפי מספר האימונים שכבר בוצעו (מסתובב בין התרגילים)
+  const n = history.length;
+  const out = [];
+  ["a","c","e"].forEach((pid, k) => {
+    const plan = planById(pid);
+    const i = (n + k) % plan.exercises.length;
+    const ex = plan.exercises[i];
+    const cur = exName(pid, i, ex);
+    const pool = [ex.name, ...ex.alts].filter(x => x !== cur);
+    const alt = pool[(n + k) % pool.length];
+    out.push({planId:pid, i, day:plan.day, group:ex.group, from:cur, to:alt});
+  });
+  return out;
+}
+function applySwap(planId, i, name){
+  const ex = planById(planId).exercises[i];
+  if(name === ex.name) delete swaps[exKey(planId,i)];
+  else swaps[exKey(planId,i)] = name;
+  save(K.swaps, swaps);
+  toast("הוחלף ל" + name);
+  render();
+}
+function snoozeSugg(days){
+  sugg.nextAt = Date.now() + days*864e5; save(K.sugg, sugg); render();
+  toast(days >= 30 ? "נתראה בחודש הבא" : "נזכיר לך בעוד שבוע");
+}
+
+/* ============ תצוגה ============ */
+function render(){ app.innerHTML = active ? viewWorkout() : viewHome(); }
+
+function viewHome(){
+  const due = suggestionDue();
+  let h = "";
+  h += '<header class="top" id="top"><div class="top-row">' +
+       '<div class="brand">מאמן <span>הברזל</span></div><div class="spacer"></div>' +
+       '<button class="iconbtn" data-act="theme" title="מצב כהה/בהיר" aria-label="החלפת ערכת צבעים">◐</button>' +
+       '</div></header>';
+
+  h += '<div class="section-label">תוכנית השבוע</div><div class="stack">';
+  for(const p of PLANS){
+    const isRest = p.kind === "cardio";
+    const sets = p.exercises.reduce((a,e) => a + e.sets, 0);
+    const meta = isRest ? p.note
+      : sets + " סטים · " + p.exercises.length + " תרגילים · כ־" + Math.round(sets*3.2) + " דק׳";
+    h += '<button class="card day' + (isRest?" rest":"") + '" data-act="start" data-plan="' + p.id + '">' +
+         '<div class="day-mark">' + (isRest ? "↺" : p.day.replace("יום ","")) + '</div>' +
+         '<div><div class="day-title">' + esc(p.title) + '</div><div class="day-meta">' + esc(p.day) + ' · ' + esc(meta) + '</div></div>' +
+         '<div class="chev">›</div></button>';
+  }
+  h += "</div>";
+
+  if(due){
+    const list = pickSuggestions();
+    h += '<div class="section-label">גיוון חודשי</div>';
+    h += '<div class="card sugg"><h3>עבר חודש — זה הזמן לאתגר את השרירים</h3>' +
+         '<p>אותה תבנית אימון, זווית עבודה חדשה. אפשר להחליף עכשיו, ותמיד לחזור אחורה.</p><div style="margin-top:10px">';
+    list.forEach((s,idx) => {
+      h += '<div class="alt"><div class="alt-txt"><b>' + esc(s.to) + '</b>' +
+           '<span>' + esc(s.day) + ' · ' + esc(s.group) + ' · במקום ' + esc(s.from) + '</span></div>' +
+           '<button data-act="swap" data-plan="' + s.planId + '" data-i="' + s.i + '" data-name="' + esc(s.to) + '">החלף</button></div>';
+    });
+    h += '</div><div class="btn-row" style="margin-top:14px">' +
+         '<button class="btn ghost" data-act="sugg-done">סיימתי, נתראה בחודש הבא</button>' +
+         '</div><button class="btn quiet" data-act="sugg-later">אולי בשבוע הבא</button></div>';
+  }
+
+  const swapKeys = Object.keys(swaps);
+  if(swapKeys.length){
+    h += '<div class="section-label">תרגילים שהחלפת</div><div class="card"><div class="hist-lines" style="border:0;margin:0;padding:0">';
+    swapKeys.forEach(k => {
+      const [pid, i] = k.split(":");
+      const plan = planById(pid); if(!plan) return;
+      const ex = plan.exercises[+i]; if(!ex) return;
+      h += '<div class="hist-line"><b>' + esc(swaps[k]) + '</b>' +
+           '<em style="font-size:12.5px">' + esc(plan.day) + '</em>' +
+           '<button class="btn quiet" style="width:auto;padding:0 0 0 8px" data-act="unswap" data-plan="' + pid + '" data-i="' + i + '">שחזר</button></div>';
+    });
+    h += "</div></div>";
+  }
+
+  h += '<div class="section-label">שני האימונים האחרונים</div>';
+  if(!history.length){
+    h += '<div class="card"><div class="empty">עוד לא נרשם אימון. בחר יום למעלה והתחל — ההיסטוריה תופיע כאן.</div></div>';
+  }else{
+    h += '<div class="stack">';
+    history.slice(0,2).forEach(s => {
+      const mins = Math.max(1, Math.round((s.endedAt - s.date)/60000));
+      h += '<div class="card"><div class="hist-top"><div class="hist-date">' + esc(s.planTitle) + '</div>' +
+           '<div class="hist-when">' + esc(relDay(s.date)) + '</div></div>' +
+           '<div class="day-meta">' + esc(fmtDate(s.date)) + '</div>' +
+           '<div class="hist-stats">' +
+           '<div class="stat"><b class="num">' + s.setsDone + "/" + s.setsTotal + '</b><span>סטים</span></div>' +
+           '<div class="stat"><b class="num">' + mins + '</b><span>דקות</span></div>' +
+           '<div class="stat"><b class="num">' + s.exercises.filter(e => e.done === e.sets).length + "/" + s.exercises.length + '</b><span>תרגילים</span></div>' +
+           '</div><div class="hist-lines">';
+      s.exercises.forEach(e => {
+        h += '<div class="hist-line"><b>' + esc(e.name) + '</b><em>' + e.done + "/" + e.sets +
+             (e.weight ? " · " + esc(e.weight) + " ק״ג" : "") + '</em></div>';
+      });
+      h += "</div></div>";
+    });
+    h += "</div>";
+    if(history.length > 2){
+      h += '<button class="btn quiet" data-act="clear">מחק את כל ההיסטוריה (' + history.length + ' אימונים)</button>';
+    }
+  }
+  return h;
+}
+
+function viewWorkout(){
+  const plan = planById(active.planId);
+  const t = totals();
+  const cur = currentIndex();
+  const pct = Math.round(t.done / t.total * 100);
+  const elapsed = Math.max(0, Math.round((Date.now() - active.startedAt)/60000));
+  let h = "";
+
+  h += '<header class="top"><div class="top-row">' +
+       '<button class="iconbtn" data-act="home" aria-label="חזרה">‹</button>' +
+       '<div><div class="brand" style="font-size:17px">' + esc(plan.title) + '</div>' +
+       '<div class="day-meta" style="font-size:12.5px">' + esc(plan.day) + ' · ' + elapsed + ' דק׳ באימון</div></div>' +
+       '<div class="spacer"></div>' +
+       '<button class="iconbtn" data-act="theme" aria-label="החלפת ערכת צבעים">◐</button></div>' +
+       '<div class="rail"><div class="rail-head"><b class="num">' + pct + '%</b>' +
+       '<span>נותרו <b class="num">' + (t.total - t.done) + '</b> סטים ו־<b class="num">' + (t.exTotal - t.exDone) + '</b> תרגילים</span></div>' +
+       '<div class="bar"><i style="width:' + pct + '%"></i></div></div></header>';
+
+  h += '<div class="plan-note">' + esc(plan.note) + '</div><div class="stack">';
+
+  plan.exercises.forEach((ex,i) => {
+    const st = active.exercises[i];
+    const d = st.done.filter(Boolean).length;
+    const isDone = d === ex.sets;
+    const nextSet = st.done.indexOf(false);
+    const prev = lastWeight(active.planId, i, st.name);
+    h += '<div class="card ex' + (isDone ? " done" : (i === cur ? " current" : "")) + '">' +
+         '<div class="ex-head"><div class="ex-idx">' + (isDone ? "✓" : (i+1)) + '</div><div style="flex:1">' +
+         '<div class="ex-group">' + esc(ex.group) + '</div>' +
+         '<div class="ex-name">' + esc(st.name) + '</div>' +
+         '<div class="ex-sub">' + ex.sets + ' סטים · ' + esc(ex.reps) + '</div></div></div>';
+
+    h += '<div class="ex-body"><div class="sets">';
+    for(let j=0;j<ex.sets;j++){
+      const on = st.done[j];
+      h += '<button class="set' + (on ? " on" : (j === nextSet && i === cur ? " next" : "")) + '" ' +
+           'data-act="set" data-i="' + i + '" data-j="' + j + '" ' +
+           'aria-label="סט ' + (j+1) + '" aria-pressed="' + on + '">' + (on ? "✓" : (j+1)) + '</button>';
+    }
+    h += "</div>";
+    if(ex.rest > 0){
+      h += '<div class="tools">' +
+           '<label class="pill">משקל<input class="wt num" inputmode="decimal" data-act="weight" data-i="' + i + '" ' +
+           'value="' + esc(st.weight) + '" placeholder="' + (prev ? esc(prev) : "ק״ג") + '"></label>' +
+           '<button class="pill" data-act="rest" data-i="' + i + '" title="לחיצה משנה את זמן המנוחה">מנוחה <b class="num">' +
+           mmss(exRest(active.planId,i,ex)) + '</b></button></div>';
+    }
+    h += "</div>";
+    if(i === cur && !isDone && prev && !st.weight){
+      h += '<div class="hint">בפעם שעברה: ' + esc(prev) + ' ק״ג</div>';
+    }
+    h += "</div>";
+  });
+  h += "</div>";
+
+  h += '<div class="btn-row" style="margin-top:18px"><button class="btn danger" data-act="cancel">בטל אימון</button></div>';
+
+  h += '<div class="footbar"><div class="footbar-in">' +
+       '<button class="btn" data-act="finish">' +
+       (t.done === t.total ? "סיים ושמור אימון 🎉" : "סיים ושמור (" + t.done + "/" + t.total + " סטים)") +
+       '</button></div></div>';
+  return h;
+}
+
+/* ============ אירועים ============ */
+document.addEventListener("click", e => {
+  const el = e.target.closest("[data-act]"); if(!el) return;
+  const act = el.dataset.act;
+  if(act === "start"){ startWorkout(el.dataset.plan); }
+  else if(act === "set"){ toggleSet(+el.dataset.i, +el.dataset.j); }
+  else if(act === "rest"){ cycleRest(+el.dataset.i); }
+  else if(act === "finish"){ finishWorkout(); }
+  else if(act === "cancel"){ if(confirm("לבטל את האימון בלי לשמור?")) cancelWorkout(); }
+  else if(act === "home"){ render(); window.scrollTo(0,0); }
+  else if(act === "skiprest"){ endRest(false); }
+  else if(act === "addrest"){ rest.end += 15000; rest.total += 15; tickRest(); }
+  else if(act === "swap"){ applySwap(el.dataset.plan, +el.dataset.i, el.dataset.name); el.textContent = "הוחלף ✓"; el.classList.add("applied"); }
+  else if(act === "unswap"){ applySwap(el.dataset.plan, +el.dataset.i, planById(el.dataset.plan).exercises[+el.dataset.i].name); }
+  else if(act === "sugg-done"){ snoozeSugg(30); }
+  else if(act === "sugg-later"){ snoozeSugg(7); }
+  else if(act === "clear"){ if(confirm("למחוק את כל היסטוריית האימונים?")){ history = []; save(K.hist, history); render(); } }
+  else if(act === "theme"){
+    const cur = document.documentElement.getAttribute("data-theme");
+    const isDark = cur ? cur === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+    const next = isDark ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", next);
+    save(K.theme, next);
+  }
+});
+document.addEventListener("input", e => {
+  const el = e.target.closest('[data-act="weight"]'); if(!el || !active) return;
+  active.exercises[+el.dataset.i].weight = el.value.trim();
+  save(K.active, active);
+});
+try{
+  const th = load(K.theme, null);
+  if(th) document.documentElement.setAttribute("data-theme", th);
+}catch(e){}
+
+render();
+setInterval(() => {
+  const t = document.activeElement;
+  const typing = t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA");
+  if(active && !rest.id && !typing) render();
+}, 60000); // רענון מונה הדקות
+</script>
