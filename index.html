@@ -731,15 +731,21 @@ let deleted = load(KS.del, {hist:[], body:[]});
 let sb = null, sbUser = null, syncing = false, syncErr = "";
 let syncUI = {email:"", sent:false};
 
-const SB_SQL = `create table if not exists gym_state (
+const SB_SQL = `-- הכול נוצר ב-schema נפרד בשם gym, מבודד מ-public
+create schema if not exists gym;
+grant usage on schema gym to anon, authenticated;
+
+create table if not exists gym.state (
   user_id uuid primary key references auth.users(id) on delete cascade,
   data jsonb not null default '{}'::jsonb,
   updated_at timestamptz not null default now()
 );
-alter table gym_state enable row level security;
-create policy "own_select" on gym_state for select using (auth.uid() = user_id);
-create policy "own_insert" on gym_state for insert with check (auth.uid() = user_id);
-create policy "own_update" on gym_state for update using (auth.uid() = user_id);`;
+grant select, insert, update on gym.state to authenticated;
+
+alter table gym.state enable row level security;
+create policy "own_select" on gym.state for select using (auth.uid() = user_id);
+create policy "own_insert" on gym.state for insert with check (auth.uid() = user_id);
+create policy "own_update" on gym.state for update using (auth.uid() = user_id);`;
 
 function syncOn(){ return !!(sbCfg && sbCfg.url && sbCfg.key); }
 async function sbClient(){
@@ -747,7 +753,10 @@ async function sbClient(){
   if(sb) return sb;
   try{
     const mod = await import("https://esm.sh/@supabase/supabase-js@2");
-    sb = mod.createClient(sbCfg.url, sbCfg.key, {auth:{persistSession:true, autoRefreshToken:true, storageKey:"gt.sbauth"}});
+    sb = mod.createClient(sbCfg.url, sbCfg.key, {
+      db:{schema:"gym"},
+      auth:{persistSession:true, autoRefreshToken:true, storageKey:"gt.sbauth"}
+    });
     return sb;
   }catch(e){ syncErr = "לא הצלחתי לטעון את ספריית Supabase (אין אינטרנט?)"; return null; }
 }
@@ -824,11 +833,11 @@ async function syncNow(silent){
   if(!u){ if(!silent) toast("צריך להתחבר קודם"); return; }
   syncing = true; syncErr = ""; if(!silent) render();
   try{
-    const res = await c.from("gym_state").select("data").eq("user_id", u.id).maybeSingle();
+    const res = await c.from("state").select("data").eq("user_id", u.id).maybeSingle();
     if(res.error) throw res.error;
     mergeRemote(res.data ? res.data.data : null);
     const payload = {v:1, history, body, swaps, restOver, sugg, deleted};
-    const up = await c.from("gym_state").upsert({user_id:u.id, data:payload, updated_at:new Date().toISOString()});
+    const up = await c.from("state").upsert({user_id:u.id, data:payload, updated_at:new Date().toISOString()});
     if(up.error) throw up.error;
     lastSync = Date.now(); save(KS.synced, lastSync);
     if(!silent) toast("סונכרן");
@@ -1193,10 +1202,10 @@ function viewSync(){
 
   if(!syncOn()){
     h += '<div class="section-label">הגדרה חד-פעמית</div><div class="card"><ol class="steps">' +
-         '<li>היכנס ל-<code>supabase.com</code>. אפשר להשתמש ב<b>פרויקט קיים</b> — הטבלה שלנו עצמאית ולא נוגעת בשאר הנתונים שבו. אם אין לך פרויקט, פתח אחד ב-<b>Frankfurt (eu-central-1)</b>.</li>' +
-         '<li>בחר את הפרויקט שבו תשתמש. תוכנית החינם מוגבלת ל-2 פרויקטים פעילים, ולכן שימוש חוזר בפרויקט קיים עדיף על פתיחת חדש.</li>' +
-         '<li>בתפריט השמאלי: <b>SQL Editor</b> ← הדבק את הקוד הזה ולחץ <b>Run</b>:' +
+         '<li>היכנס ל-<code>supabase.com</code> ובחר <b>פרויקט קיים</b>. כל מה שנוסיף יושב ב-schema נפרד בשם <code>gym</code>, מבודד לגמרי מ-<code>public</code> שבו חיה האפליקציה הקיימת.</li>' +
+         '<li><b>SQL Editor</b> ← הדבק את הקוד הזה ולחץ <b>Run</b>:' +
          '<div class="sqlbox">' + esc(SB_SQL) + '</div></li>' +
+         '<li><b>Project Settings ← API ← Data API</b>: בשדה <b>Exposed schemas</b> הוסף <code>gym</code> לצד <code>public</code> ושמור. בלי זה השרת לא יחשוף את הטבלה.</li>' +
          '<li><b>Authentication ← Emails ← Magic Link</b>: ודא שבגוף המייל מופיע <code>{{ .Token }}</code>. זה מה ששולח קוד בן 6 ספרות במקום קישור (קישור לא עובד טוב באפליקציה מהמסך הבית).</li>' +
          '<li><b>Project Settings ← API</b>: העתק את <code>Project URL</code> ואת המפתח <code>anon public</code>, והדבק כאן למטה.</li>' +
          '</ol>' +
@@ -1205,7 +1214,7 @@ function viewSync(){
          '<div class="field" style="margin-top:10px"><label for="sbKey">anon public key</label>' +
          '<input class="txtin" id="sbKey" placeholder="eyJhbGciOi..." autocapitalize="off" spellcheck="false"></div>' +
          '<button class="btn" style="margin-top:14px" data-act="sbsave">שמור חיבור</button>' +
-         '<div class="ex-sub" style="margin-top:10px">המפתח <b>anon</b> נועד לרוץ בדפדפן והוא לא סודי — ההגנה היא ה-RLS שהרצת בשלב 3, שמאפשר גישה רק לשורה של המשתמש המחובר. את המפתח <code>service_role</code> אין להדביק כאן לעולם.</div></div>';
+         '<div class="ex-sub" style="margin-top:10px">כל הנתונים יושבים ב-<code>gym.state</code> ולא נוגעים בטבלאות הקיימות. המפתח <b>anon</b> נועד לרוץ בדפדפן והוא לא סודי — ההגנה היא ה-RLS שהרצת בשלב 3, שמאפשר גישה רק לשורה של המשתמש המחובר. את המפתח <code>service_role</code> אין להדביק כאן לעולם.</div></div>';
     return h;
   }
 
