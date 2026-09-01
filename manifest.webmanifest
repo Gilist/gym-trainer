@@ -1,0 +1,16 @@
+{
+  "name": "מאמן הברזל",
+  "short_name": "מאמן הברזל",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "lang": "he",
+  "dir": "rtl",
+  "background_color": "#EBEDF1",
+  "theme_color": "#EBEDF1",
+  "icons": [
+    {"src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
+    {"src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"}
+  ]
+}
