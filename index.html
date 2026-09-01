@@ -1240,8 +1240,8 @@ function viewSync(){
          '</ol>' +
          '<div class="field" style="margin-top:6px"><label for="sbUrl">Project URL</label>' +
          '<input class="txtin" id="sbUrl" placeholder="https://xxxxx.supabase.co" autocapitalize="off" spellcheck="false"></div>' +
-         '<div class="field" style="margin-top:10px"><label for="sbKey">anon public key</label>' +
-         '<input class="txtin" id="sbKey" placeholder="eyJhbGciOi..." autocapitalize="off" spellcheck="false"></div>' +
+         '<div class="field" style="margin-top:10px"><label for="sbKey">Publishable key (או anon public)</label>' +
+         '<input class="txtin" id="sbKey" placeholder="sb_publishable_... או eyJhbGciOi..." autocapitalize="off" spellcheck="false"></div>' +
          '<button class="btn" style="margin-top:14px" data-act="sbsave">שמור חיבור</button>' +
          '<div class="ex-sub" style="margin-top:10px">כל הנתונים יושבים ב-<code>gym.state</code> ולא נוגעים בטבלאות הקיימות. המפתח <b>anon</b> נועד לרוץ בדפדפן והוא לא סודי — ההגנה היא ה-RLS שהרצת בשלב 3, שמאפשר גישה רק לשורה של המשתמש המחובר. את המפתח <code>service_role</code> אין להדביק כאן לעולם.</div></div>';
     return h;
