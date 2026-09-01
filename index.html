@@ -175,6 +175,20 @@ input{font:inherit}
 .log-row .d{color:var(--muted); font-size:13px}
 .log-row .v{margin-inline-start:auto; font-weight:700; font-variant-numeric:tabular-nums; white-space:nowrap}
 .log-row .x{color:var(--muted); font-size:18px; padding:0 4px}
+.sync-dot{width:9px; height:9px; border-radius:99px; display:inline-block; margin-inline-end:7px; vertical-align:middle}
+.sync-dot.on{background:var(--good)} .sync-dot.off{background:var(--muted)} .sync-dot.err{background:var(--hot)}
+.steps{counter-reset:st; margin:0; padding:0; list-style:none}
+.steps li{counter-increment:st; position:relative; padding-inline-start:32px; margin-bottom:14px; font-size:14px; line-height:1.6}
+.steps li::before{content:counter(st); position:absolute; inset-inline-start:0; top:1px; width:22px; height:22px;
+  border-radius:8px; background:var(--accent-soft); color:var(--accent); font-weight:700; font-size:12px;
+  display:grid; place-items:center; font-family:"Rubik"}
+.steps code, .kbd{background:var(--surface-2); border:1px solid var(--line); border-radius:7px; padding:1px 6px;
+  font-size:12.5px; direction:ltr; unicode-bidi:isolate; display:inline-block}
+.sqlbox{background:var(--surface-2); border:1px solid var(--line); border-radius:12px; padding:12px;
+  font-family:ui-monospace,Menlo,monospace; font-size:11.5px; line-height:1.6; direction:ltr; text-align:left;
+  overflow-x:auto; white-space:pre; margin-top:8px}
+.txtin{width:100%; border:1px solid var(--line); background:var(--surface-2); border-radius:12px; padding:12px;
+  color:var(--ink); direction:ltr; text-align:left; font-size:14px}
 
 /* מסך טרום-אימון */
 .q{margin-top:14px}
@@ -629,6 +643,7 @@ function finishWorkout(){
   endRest(false); keepAwake(false);
   view = "home"; render(); window.scrollTo(0,0);
   toast("האימון נשמר 💪");
+  syncNow(true);
 }
 function cancelWorkout(){
   active = null; localStorage.removeItem(K.active);
@@ -673,8 +688,14 @@ function addBody(){
   if(!isFinite(w) && !isFinite(f)){ toast("מלא משקל או אחוז שומן"); return; }
   body.unshift({t: Date.now(), w: isFinite(w) ? w : null, f: isFinite(f) ? f : null});
   body = body.slice(0,200); save(K.body, body); render(); toast("המדידה נשמרה");
+  syncNow(true);
 }
-function delBody(t){ body = body.filter(b => b.t !== t); save(K.body, body); render(); toast("המדידה נמחקה"); }
+function delBody(t){
+  body = body.filter(b => b.t !== t);
+  deleted.body = [...new Set([...(deleted.body||[]), t])];
+  save(K.body, body); save(KS.del, deleted); render(); toast("המדידה נמחקה");
+  syncNow(true);
+}
 
 function exportData(){
   const lines = ["מאמן הברזל — ייצוא נתונים", "תאריך: " + new Date().toLocaleDateString("he-IL"), ""];
@@ -700,6 +721,129 @@ function showExport(txt){
   const w = window.open("", "_blank");
   if(w){ w.document.write("<pre style='white-space:pre-wrap;font-family:monospace;direction:rtl'>" + esc(txt) + "</pre>"); }
   else toast("לא הצלחתי להעתיק");
+}
+
+/* ============ סנכרון ענן (Supabase) ============ */
+const KS = {cfg:"gt.sbcfg", synced:"gt.synced", del:"gt.deleted"};
+let sbCfg   = load(KS.cfg, null);
+let lastSync= load(KS.synced, null);
+let deleted = load(KS.del, {hist:[], body:[]});
+let sb = null, sbUser = null, syncing = false, syncErr = "";
+let syncUI = {email:"", sent:false};
+
+const SB_SQL = `create table if not exists gym_state (
+  user_id uuid primary key references auth.users(id) on delete cascade,
+  data jsonb not null default '{}'::jsonb,
+  updated_at timestamptz not null default now()
+);
+alter table gym_state enable row level security;
+create policy "own_select" on gym_state for select using (auth.uid() = user_id);
+create policy "own_insert" on gym_state for insert with check (auth.uid() = user_id);
+create policy "own_update" on gym_state for update using (auth.uid() = user_id);`;
+
+function syncOn(){ return !!(sbCfg && sbCfg.url && sbCfg.key); }
+async function sbClient(){
+  if(!syncOn()) return null;
+  if(sb) return sb;
+  try{
+    const mod = await import("https://esm.sh/@supabase/supabase-js@2");
+    sb = mod.createClient(sbCfg.url, sbCfg.key, {auth:{persistSession:true, autoRefreshToken:true, storageKey:"gt.sbauth"}});
+    return sb;
+  }catch(e){ syncErr = "לא הצלחתי לטעון את ספריית Supabase (אין אינטרנט?)"; return null; }
+}
+async function sbSession(){
+  const c = await sbClient(); if(!c) return null;
+  try{
+    const {data} = await c.auth.getSession();
+    sbUser = data && data.session ? data.session.user : null;
+  }catch(e){ sbUser = null; }
+  return sbUser;
+}
+async function sbSendCode(){
+  const el = document.getElementById("sbEmail");
+  const email = (el ? el.value : "").trim();
+  if(!email){ toast("הזן כתובת מייל"); return; }
+  const c = await sbClient(); if(!c){ toast(syncErr || "אין חיבור"); return; }
+  syncUI.email = email;
+  const {error} = await c.auth.signInWithOtp({email, options:{shouldCreateUser:true}});
+  if(error){ toast("שגיאה: " + error.message); return; }
+  syncUI.sent = true; render(); toast("קוד נשלח למייל");
+}
+async function sbVerify(){
+  const el = document.getElementById("sbCode");
+  const token = (el ? el.value : "").trim();
+  if(!token){ toast("הזן את הקוד מהמייל"); return; }
+  const c = await sbClient(); if(!c) return;
+  const {error} = await c.auth.verifyOtp({email: syncUI.email, token, type:"email"});
+  if(error){ toast("קוד שגוי או שפג תוקפו"); return; }
+  syncUI.sent = false;
+  await sbSession();
+  toast("מחובר — מסנכרן…");
+  await syncNow(true);
+  render();
+}
+async function sbSignOut(){
+  const c = await sbClient(); if(c) await c.auth.signOut();
+  sbUser = null; render(); toast("התנתקת. הנתונים נשארו על המכשיר.");
+}
+function sbSaveCfg(){
+  const u = (document.getElementById("sbUrl")||{}).value || "";
+  const k = (document.getElementById("sbKey")||{}).value || "";
+  if(!u.trim() || !k.trim()){ toast("מלא את שתי השורות"); return; }
+  sbCfg = {url:u.trim().replace(/\/+$/,""), key:k.trim()};
+  save(KS.cfg, sbCfg); sb = null; syncErr = "";
+  render(); toast("החיבור נשמר");
+}
+function sbForget(){
+  if(!confirm("לנתק את החיבור לענן? הנתונים על המכשיר יישארו.")) return;
+  sbCfg = null; sb = null; sbUser = null;
+  try{ localStorage.removeItem(KS.cfg); }catch(e){}
+  render(); toast("החיבור נותק");
+}
+function mergeRemote(r){
+  if(!r) return;
+  const dh = new Set([...(deleted.hist||[]), ...((r.deleted && r.deleted.hist) || [])]);
+  const db = new Set([...(deleted.body||[]), ...((r.deleted && r.deleted.body) || [])]);
+  deleted = {hist:[...dh], body:[...db]};
+  const hm = new Map();
+  [...(r.history || []), ...history].forEach(x => { if(x && !dh.has(x.date)) hm.set(x.date, x); });
+  history = [...hm.values()].sort((a,b) => b.date - a.date).slice(0,60);
+  const bm = new Map();
+  [...(r.body || []), ...body].forEach(x => { if(x && !db.has(x.t)) bm.set(x.t, x); });
+  body = [...bm.values()].sort((a,b) => b.t - a.t).slice(0,200);
+  swaps = Object.assign({}, r.swaps || {}, swaps);
+  restOver = Object.assign({}, r.restOver || {}, restOver);
+  if(r.sugg && (!sugg || r.sugg.nextAt > sugg.nextAt)) sugg = r.sugg;
+  save(K.hist, history); save(K.body, body); save(K.swaps, swaps);
+  save(K.rest, restOver); save(K.sugg, sugg); save(KS.del, deleted);
+}
+async function syncNow(silent){
+  if(!syncOn() || syncing) return;
+  const c = await sbClient(); if(!c){ if(!silent) toast(syncErr || "אין חיבור"); return; }
+  const u = await sbSession();
+  if(!u){ if(!silent) toast("צריך להתחבר קודם"); return; }
+  syncing = true; syncErr = ""; if(!silent) render();
+  try{
+    const res = await c.from("gym_state").select("data").eq("user_id", u.id).maybeSingle();
+    if(res.error) throw res.error;
+    mergeRemote(res.data ? res.data.data : null);
+    const payload = {v:1, history, body, swaps, restOver, sugg, deleted};
+    const up = await c.from("gym_state").upsert({user_id:u.id, data:payload, updated_at:new Date().toISOString()});
+    if(up.error) throw up.error;
+    lastSync = Date.now(); save(KS.synced, lastSync);
+    if(!silent) toast("סונכרן");
+  }catch(e){
+    syncErr = (e && e.message) ? e.message : "שגיאת סנכרון";
+    if(!silent) toast("לא הצלחתי לסנכרן: " + syncErr);
+  }
+  syncing = false; render();
+}
+function syncStatus(){
+  if(!syncOn()) return {dot:"off", text:"לא מחובר — הנתונים על המכשיר בלבד"};
+  if(!sbUser) return {dot:"off", text:"מוגדר, אבל צריך להתחבר עם המייל"};
+  if(syncErr) return {dot:"err", text:"שגיאה בסנכרון האחרון"};
+  return {dot:"on", text: lastSync ? "סונכרן " + relDay(lastSync) + " ב-" +
+    new Date(lastSync).toLocaleTimeString("he-IL",{hour:"2-digit",minute:"2-digit"}) : "מחובר, טרם סונכרן"};
 }
 
 /* ============ גרפים ============ */
@@ -749,6 +893,7 @@ function render(){
                 : view === "ready" ? viewReady()
                 : view === "progress" ? viewProgress()
                 : view === "body" ? viewBody()
+                : view === "sync" ? viewSync()
                 : viewHome();
 }
 function header(title, sub){
@@ -805,7 +950,10 @@ function viewHome(){
        '<div><div class="day-title">התקדמות במשקלים</div><div class="day-meta">גרף לכל תרגיל, לפי מה שרשמת</div></div><div class="chev">›</div></button>' +
        '<button class="card day tool" data-act="go-body"><div class="day-mark">⚖</div>' +
        '<div><div class="day-title">משקל גוף ואחוז שומן</div><div class="day-meta">' +
-       (body.length ? "מדידה אחרונה: " + relDay(body[0].t) : "עוד לא נרשמה מדידה") + '</div></div><div class="chev">›</div></button></div>';
+       (body.length ? "מדידה אחרונה: " + relDay(body[0].t) : "עוד לא נרשמה מדידה") + '</div></div><div class="chev">›</div></button>' +
+       '<button class="card day tool" data-act="go-sync"><div class="day-mark">☁</div>' +
+       '<div><div class="day-title">סנכרון ענן</div><div class="day-meta"><span class="sync-dot ' +
+       syncStatus().dot + '"></span>' + esc(syncStatus().text) + '</div></div><div class="chev">›</div></button></div>';
 
   if(suggestionDue()){
     h += '<div class="section-label">גיוון חודשי</div><div class="card sugg">' +
@@ -1030,6 +1178,63 @@ function viewBody(){
   return h + "</div>";
 }
 
+function viewSync(){
+  const st = syncStatus();
+  let h = header("סנכרון ענן", "גיבוי אוטומטי ומעבר בין מכשירים");
+  h += '<div class="card" style="margin-top:16px"><div style="font-size:14px">' +
+       '<span class="sync-dot ' + st.dot + '"></span>' + esc(st.text) + '</div>';
+  if(syncOn() && sbUser){
+    h += '<div class="day-meta" style="margin-top:6px">מחובר כ-' + esc(sbUser.email || "") + '</div>' +
+         '<div class="btn-row" style="margin-top:14px">' +
+         '<button class="btn" data-act="syncnow">' + (syncing ? "מסנכרן…" : "סנכרן עכשיו") + '</button></div>' +
+         '<button class="btn quiet" data-act="signout">התנתק מהחשבון</button>';
+  }
+  h += '</div>';
+
+  if(!syncOn()){
+    h += '<div class="section-label">הגדרה חד-פעמית</div><div class="card"><ol class="steps">' +
+         '<li>היכנס ל-<code>supabase.com</code> ופתח חשבון חינמי (בלי כרטיס אשראי).</li>' +
+         '<li>לחץ <b>New project</b>. שם: <code>gym-trainer</code>, אזור: <b>Frankfurt (eu-central-1)</b>. סיסמת הדאטהבייס נשמרת אצלך — לא נצטרך אותה.</li>' +
+         '<li>בתפריט השמאלי: <b>SQL Editor</b> ← הדבק את הקוד הזה ולחץ <b>Run</b>:' +
+         '<div class="sqlbox">' + esc(SB_SQL) + '</div></li>' +
+         '<li><b>Authentication ← Emails ← Magic Link</b>: ודא שבגוף המייל מופיע <code>{{ .Token }}</code>. זה מה ששולח קוד בן 6 ספרות במקום קישור (קישור לא עובד טוב באפליקציה מהמסך הבית).</li>' +
+         '<li><b>Project Settings ← API</b>: העתק את <code>Project URL</code> ואת המפתח <code>anon public</code>, והדבק כאן למטה.</li>' +
+         '</ol>' +
+         '<div class="field" style="margin-top:6px"><label for="sbUrl">Project URL</label>' +
+         '<input class="txtin" id="sbUrl" placeholder="https://xxxxx.supabase.co" autocapitalize="off" spellcheck="false"></div>' +
+         '<div class="field" style="margin-top:10px"><label for="sbKey">anon public key</label>' +
+         '<input class="txtin" id="sbKey" placeholder="eyJhbGciOi..." autocapitalize="off" spellcheck="false"></div>' +
+         '<button class="btn" style="margin-top:14px" data-act="sbsave">שמור חיבור</button>' +
+         '<div class="ex-sub" style="margin-top:10px">המפתח <b>anon</b> נועד לרוץ בדפדפן והוא לא סודי — ההגנה היא ה-RLS שהרצת בשלב 3, שמאפשר גישה רק לשורה של המשתמש המחובר. את המפתח <code>service_role</code> אין להדביק כאן לעולם.</div></div>';
+    return h;
+  }
+
+  if(!sbUser){
+    h += '<div class="section-label">התחברות</div><div class="card">';
+    if(!syncUI.sent){
+      h += '<div class="field"><label for="sbEmail">כתובת המייל שלך</label>' +
+           '<input class="txtin" id="sbEmail" inputmode="email" autocapitalize="off" spellcheck="false" placeholder="you@example.com" value="' + esc(syncUI.email) + '"></div>' +
+           '<button class="btn" style="margin-top:14px" data-act="sendcode">שלח לי קוד</button>' +
+           '<div class="ex-sub" style="margin-top:10px">בלי סיסמה. נשלח קוד בן 6 ספרות למייל, וההתחברות נשמרת במכשיר.</div>';
+    }else{
+      h += '<div class="field"><label for="sbCode">הקוד שקיבלת ב-' + esc(syncUI.email) + '</label>' +
+           '<input class="txtin num" id="sbCode" inputmode="numeric" placeholder="123456"></div>' +
+           '<button class="btn" style="margin-top:14px" data-act="verifycode">התחבר</button>' +
+           '<button class="btn quiet" data-act="resend">שלח קוד שוב</button>';
+    }
+    h += '</div>';
+  }
+
+  h += '<div class="section-label">מה מסונכרן</div><div class="card"><div class="hist-lines" style="border:0;margin:0;padding:0">' +
+       '<div class="hist-line"><b>היסטוריית אימונים</b><em>' + history.length + '</em></div>' +
+       '<div class="hist-line"><b>מדידות גוף</b><em>' + body.length + '</em></div>' +
+       '<div class="hist-line"><b>תרגילים שהוחלפו</b><em>' + Object.keys(swaps).length + '</em></div>' +
+       '<div class="hist-line"><b>זמני מנוחה מותאמים</b><em>' + Object.keys(restOver).length + '</em></div>' +
+       '</div><div class="ex-sub" style="margin-top:12px">האימון שרץ כרגע לא מסונכרן עד שתסיים אותו. המיזוג מאחד רשומות משני הכיוונים, כך שאין סכנה שמכשיר אחד ידרוס את השני.</div></div>';
+  if(syncOn()) h += '<button class="btn quiet" data-act="sbforget">נתק את החיבור לענן</button>';
+  return h;
+}
+
 /* ============ אירועים ============ */
 document.addEventListener("click", e => {
   const el = e.target.closest("[data-act]"); if(!el) return;
@@ -1052,6 +1257,13 @@ document.addEventListener("click", e => {
   else if(act === "resume"){ view = "workout"; render(); window.scrollTo(0,0); }
   else if(act === "go-progress"){ view = "progress"; render(); window.scrollTo(0,0); }
   else if(act === "go-body"){ view = "body"; render(); window.scrollTo(0,0); }
+  else if(act === "go-sync"){ view = "sync"; render(); window.scrollTo(0,0); sbSession().then(() => render()); }
+  else if(act === "sbsave"){ sbSaveCfg(); }
+  else if(act === "sbforget"){ sbForget(); }
+  else if(act === "sendcode" || act === "resend"){ sbSendCode(); }
+  else if(act === "verifycode"){ sbVerify(); }
+  else if(act === "syncnow"){ syncNow(false); }
+  else if(act === "signout"){ sbSignOut(); }
   else if(act === "addbody"){ addBody(); }
   else if(act === "delbody"){ delBody(+el.dataset.t); }
   else if(act === "export"){ exportData(); }
@@ -1061,7 +1273,9 @@ document.addEventListener("click", e => {
   else if(act === "unswap"){ applySwap(el.dataset.plan, +el.dataset.i, planById(el.dataset.plan).exercises[+el.dataset.i].name); }
   else if(act === "sugg-done"){ snoozeSugg(30); }
   else if(act === "sugg-later"){ snoozeSugg(7); }
-  else if(act === "clear"){ if(confirm("למחוק את כל היסטוריית האימונים?")){ history = []; save(K.hist, history); render(); } }
+  else if(act === "clear"){ if(confirm("למחוק את כל היסטוריית האימונים?")){
+    deleted.hist = [...new Set([...(deleted.hist||[]), ...history.map(x => x.date)])];
+    history = []; save(K.hist, history); save(KS.del, deleted); render(); syncNow(true); } }
   else if(act === "theme"){
     const cur = document.documentElement.getAttribute("data-theme");
     const isDark = cur ? cur === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
@@ -1091,6 +1305,7 @@ try{ const th = load(K.theme, null); if(th) document.documentElement.setAttribut
 
 render();
 if(active) keepAwake(true);
+if(syncOn()) sbSession().then(u => { render(); if(u) syncNow(true); });
 setInterval(() => {
   const t = document.activeElement;
   const typing = t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA");
